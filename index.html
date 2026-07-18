@@ -47,7 +47,7 @@
         .select-all-btn { width: 100%; padding: 10px; background: #edf2f7; border: 2px dashed #cbd5e0; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; }
         .select-all-btn.active { background: #e2e8f0; border-color: #a0aec0; }
         
-        /* Оновлена велика кнопка (стилі як у .num-btn) */
+        /* Кнопка 0 та 1 */
         .special-zero-one-btn { width: 100%; padding: 12px; border: 2px solid #cbd5e0; background: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; margin-bottom: 20px; transition: 0.2s; color: #000; }
         .special-zero-one-btn.selected { background: #3182ce; color: white; border-color: #3182ce; }
 
@@ -64,7 +64,7 @@
         .hidden { display: none !important; }
         .question-text { font-size: 56px; font-weight: bold; color: #2d3748; margin: 20px 0; }
         
-        /* Блок введення та додаткова кнопка неможливо */
+        /* Блок введення */
         .input-box { display: flex; flex-direction: column; gap: 10px; align-items: center; margin-bottom: 20px; width: 100%; }
         .input-row { display: flex; gap: 10px; justify-content: center; width: 100%; max-width: 300px; }
         input { font-size: 24px; width: 120px; padding: 10px; border: 2px solid #cbd5e0; border-radius: 8px; text-align: center; outline: none; }
@@ -169,7 +169,6 @@
             <div class="numbers-grid" id="numbers-container"></div>
             <button class="select-all-btn" id="toggle-all-btn" onclick="toggleAllNumbers()">Обрати усі</button>
             
-            <!-- Спеціальна кнопка 0 та 1 в єдиному дизайні -->
             <button class="special-zero-one-btn" id="zero-one-btn" onclick="toggleZeroOneSpecial()">Множення та ділення з 0 та 1 🚀</button>
 
             <div class="section-title">2. Оберіть дію</div>
@@ -192,7 +191,7 @@
                     <input type="number" id="user-answer" placeholder="?" pattern="[0-9]*" inputmode="numeric">
                     <button class="action-btn" id="submit-btn" onclick="checkAnswer(false)">Перевірити</button>
                 </div>
-                <button class="impossible-btn" id="impossible-btn" onclick="checkAnswer(true)">неможливо 🛑</button>
+                <button class="impossible-btn hidden" id="impossible-btn" onclick="checkAnswer(true)">неможливо 🛑</button>
             </div>
 
             <div class="feedback" id="feedback"></div>
@@ -207,7 +206,7 @@
         <!-- ЕКРАН ПЕРЕМОГИ -->
         <div id="win-screen" class="hidden">
             <div class="win-title">🎉 Ура! Перемога! 🎉</div>
-            <p class="win-text" id="win-summary">Ви успішно розв'язали всі приклади та вивчили обрану таблицю без жодної помилки!</p>
+            <p class="win-text" id="win-summary">Ви успішно розв'язали всі приклади без жодної помилки!</p>
             <button class="start-btn" onclick="showSetup()">Грати знову 🔄</button>
         </div>
     </div>
@@ -234,7 +233,8 @@
     let selectedNumbers = [];
     let isZeroOneSpecialSelected = false; 
     let selectedOp = 'mult'; 
-    
+    let activeGameHasSpecialMode = false; // Фіксує стан під час гри для відображення кнопки "неможливо"
+
     let mainQueue = [];       
     let wrongQueue = [];      
     let currentQuestion = null;
@@ -327,12 +327,11 @@
         wrongQueue = [];
         isWorkingOnErrors = false;
 
-        // 1. Стандартні обрані таблиці (1-12)
+        // 1. Стандартні числа (1-12) з меню вибору дії
         selectedNumbers.forEach(baseNum => {
             for (let factor = 1; factor <= 10; factor++) {
                 if (selectedOp === 'mult' || selectedOp === 'both') {
                     mainQueue.push({
-                        type: 'mult',
                         text: `${baseNum} × ${factor}`,
                         ans: baseNum * factor,
                         isImpossible: false
@@ -340,7 +339,6 @@
                 }
                 if (selectedOp === 'div' || selectedOp === 'both') {
                     mainQueue.push({
-                        type: 'div',
                         text: `${baseNum * factor} ÷ ${baseNum}`,
                         ans: factor,
                         isImpossible: false
@@ -348,7 +346,6 @@
 
                     if (baseNum === 1) {
                         mainQueue.push({
-                            type: 'div',
                             text: `${factor} ÷ ${factor}`,
                             ans: 1,
                             isImpossible: false
@@ -358,25 +355,23 @@
             }
         });
 
-        // 2. Спеціальний інтегрований режим "0 та 1"
+        // 2. Спеціальний режим "0 та 1" (ділення і множення додаються завжди)
         if (isZeroOneSpecialSelected) {
             for (let i = 0; i <= 10; i++) {
-                if (selectedOp === 'mult' || selectedOp === 'both') {
-                    mainQueue.push({ type: 'mult', text: `${i} × 0`, ans: 0, isImpossible: false });
-                    mainQueue.push({ type: 'mult', text: `${i} × 1`, ans: i, isImpossible: false });
-                    if (i !== 0 && i !== 1) {
-                        mainQueue.push({ type: 'mult', text: `0 × ${i}`, ans: 0, isImpossible: false });
-                        mainQueue.push({ type: 'mult', text: `1 × ${i}`, ans: i, isImpossible: false });
-                    }
+                // Додаємо множення
+                mainQueue.push({ text: `${i} × 0`, ans: 0, isImpossible: false });
+                mainQueue.push({ text: `${i} × 1`, ans: i, isImpossible: false });
+                if (i !== 0 && i !== 1) {
+                    mainQueue.push({ text: `0 × ${i}`, ans: 0, isImpossible: false });
+                    mainQueue.push({ text: `1 × ${i}`, ans: i, isImpossible: false });
                 }
                 
-                if (selectedOp === 'div' || selectedOp === 'both') {
-                    if (i > 0) {
-                        mainQueue.push({ type: 'div', text: `${i} ÷ 1`, ans: i, isImpossible: false });
-                        mainQueue.push({ type: 'div', text: `${i} ÷ ${i}`, ans: 1, isImpossible: false });
-                        mainQueue.push({ type: 'div', text: `0 ÷ ${i}`, ans: 0, isImpossible: false });
-                        mainQueue.push({ type: 'div', text: `${i} ÷ 0`, ans: 9999, isImpossible: true }); // Задано числове значення замість null, щоб уникнути збоїв фільтрації
-                    }
+                // Додаємо ділення
+                if (i > 0) {
+                    mainQueue.push({ text: `${i} ÷ 1`, ans: i, isImpossible: false });
+                    mainQueue.push({ text: `${i} ÷ ${i}`, ans: 1, isImpossible: false });
+                    mainQueue.push({ text: `0 ÷ ${i}`, ans: 0, isImpossible: false });
+                    mainQueue.push({ text: `${i} ÷ 0`, ans: -999, isImpossible: true }); 
                 }
             }
         }
@@ -398,6 +393,7 @@
             return;
         }
         
+        activeGameHasSpecialMode = isZeroOneSpecialSelected; // Фіксуємо налаштування для поточної сесії
         generateGameQueues();
 
         document.getElementById('setup-screen').classList.add('hidden');
@@ -445,6 +441,13 @@
         } else {
             endGame();
             return;
+        }
+
+        // Кнопка «неможливо» на видноті ВСЮ гру, якщо запущено режим «0 та 1»
+        if (activeGameHasSpecialMode) {
+            impossibleBtn.classList.remove('hidden');
+        } else {
+            impossibleBtn.classList.add('hidden');
         }
 
         document.getElementById('question').innerText = currentQuestion.text;
