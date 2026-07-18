@@ -227,7 +227,6 @@
     const inputField = document.getElementById('user-answer');
     const submitBtn = document.getElementById('submit-btn');
 
-    // Генерація кнопок вибору чисел
     const grid = document.getElementById('numbers-container');
     for (let i = 1; i <= 12; i++) {
         const btn = document.createElement('button');
@@ -237,7 +236,6 @@
         grid.appendChild(btn);
     }
 
-    // Очищення блоку зворотного зв'язку, коли дитина починає вводити нову відповідь
     inputField.addEventListener('input', () => {
         document.getElementById('feedback').innerText = "";
     });
@@ -299,6 +297,7 @@
 
         selectedNumbers.forEach(baseNum => {
             for (let factor = 1; factor <= 10; factor++) {
+                // Генерація множення
                 if (selectedOp === 'mult' || selectedOp === 'both') {
                     mainQueue.push({
                         type: 'mult',
@@ -308,7 +307,9 @@
                         ans: baseNum * factor
                     });
                 }
+                // Генерація ділення
                 if (selectedOp === 'div' || selectedOp === 'both') {
+                    // Стандартний приклад (наприклад, 5 ÷ 1 = 5)
                     mainQueue.push({
                         type: 'div',
                         base: baseNum, 
@@ -316,6 +317,17 @@
                         text: `${baseNum * factor} ÷ ${baseNum}`,
                         ans: factor
                     });
+
+                    // Особливе правило: якщо вчимо ділення НА 1, додаємо також приклад взаємозв'язку (наприклад, 5 ÷ 5 = 1)
+                    if (baseNum === 1) {
+                        mainQueue.push({
+                            type: 'div',
+                            base: baseNum,
+                            factor: factor,
+                            text: `${factor} ÷ ${factor}`,
+                            ans: 1
+                        });
+                    }
                 }
             }
         });
@@ -357,7 +369,6 @@
     function nextQuestion() {
         hasErrorOnCurrentQuestion = false;
         
-        // Увімкнення елементів інтерфейсу
         inputField.disabled = false;
         submitBtn.disabled = false;
         document.getElementById('feedback').innerText = "";
@@ -381,7 +392,6 @@
         document.getElementById('question').innerText = currentQuestion.text;
         inputField.value = '';
         
-        // Безпечний фокус для мобільних девайсів
         setTimeout(() => inputField.focus(), 50);
     }
 
@@ -395,7 +405,6 @@
             feedback.innerText = "🎉 Правильно!";
             feedback.style.color = "#48bb78";
             
-            // Тимчасове блокування від подвійних кліків
             inputField.disabled = true;
             submitBtn.disabled = true;
 
@@ -415,12 +424,10 @@
                 hasErrorOnCurrentQuestion = true;
             }
             
-            // Завжди повертаємо приклад з помилкою в чергу, навіть під час роботи над помилками
             const alreadyInWrong = wrongQueue.some(q => q.text === currentQuestion.text);
             if (!alreadyInWrong) {
                 wrongQueue.push(currentQuestion);
                 
-                // Динамічно оновлюємо лічильник помилок на екрані, якщо це етап роботи над помилками
                 if (isWorkingOnErrors) {
                     document.getElementById('round-indicator').innerHTML = `🛑 Робота над помилками! Залишилось виправити: <span id="examples-left" style="color:#e53e3e">${wrongQueue.length + 1}</span>`;
                 }
