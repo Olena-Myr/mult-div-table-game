@@ -47,9 +47,9 @@
         .select-all-btn { width: 100%; padding: 10px; background: #edf2f7; border: 2px dashed #cbd5e0; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; }
         .select-all-btn.active { background: #e2e8f0; border-color: #a0aec0; }
         
-        /* Нова велика кнопка для 0 та 1 */
-        .special-zero-one-btn { width: 100%; padding: 12px; background: #fff; border: 2px solid #ed8936; color: #dd6b20; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 20px; transition: 0.2s; }
-        .special-zero-one-btn.selected { background: #ed8936; color: white; border-color: #ed8936; }
+        /* Оновлена велика кнопка (стилі як у .num-btn) */
+        .special-zero-one-btn { width: 100%; padding: 12px; border: 2px solid #cbd5e0; background: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; margin-bottom: 20px; transition: 0.2s; color: #000; }
+        .special-zero-one-btn.selected { background: #3182ce; color: white; border-color: #3182ce; }
 
         /* Кнопки операцій */
         .ops-group { display: flex; gap: 8px; margin-bottom: 25px; }
@@ -169,7 +169,7 @@
             <div class="numbers-grid" id="numbers-container"></div>
             <button class="select-all-btn" id="toggle-all-btn" onclick="toggleAllNumbers()">Обрати усі</button>
             
-            <!-- Нова велика кнопка під іншими кнопками чисел -->
+            <!-- Спеціальна кнопка 0 та 1 в єдиному дизайні -->
             <button class="special-zero-one-btn" id="zero-one-btn" onclick="toggleZeroOneSpecial()">Множення та ділення з 0 та 1 🚀</button>
 
             <div class="section-title">2. Оберіть дію</div>
@@ -192,7 +192,6 @@
                     <input type="number" id="user-answer" placeholder="?" pattern="[0-9]*" inputmode="numeric">
                     <button class="action-btn" id="submit-btn" onclick="checkAnswer(false)">Перевірити</button>
                 </div>
-                <!-- Постійна додаткова кнопка для пасток на 0 -->
                 <button class="impossible-btn" id="impossible-btn" onclick="checkAnswer(true)">неможливо 🛑</button>
             </div>
 
@@ -233,7 +232,7 @@
 
 <script>
     let selectedNumbers = [];
-    let isZeroOneSpecialSelected = false; // Стан нової спеціальної кнопки
+    let isZeroOneSpecialSelected = false; 
     let selectedOp = 'mult'; 
     
     let mainQueue = [];       
@@ -302,7 +301,6 @@
         }
     }
 
-    // Перемикач для нової великої кнопки 0 та 1
     function toggleZeroOneSpecial() {
         const btn = document.getElementById('zero-one-btn');
         isZeroOneSpecialSelected = !isZeroOneSpecialSelected;
@@ -329,14 +327,12 @@
         wrongQueue = [];
         isWorkingOnErrors = false;
 
-        // 1. Обробка стандартних обраних чисел (1-12)
+        // 1. Стандартні обрані таблиці (1-12)
         selectedNumbers.forEach(baseNum => {
             for (let factor = 1; factor <= 10; factor++) {
                 if (selectedOp === 'mult' || selectedOp === 'both') {
                     mainQueue.push({
                         type: 'mult',
-                        base: baseNum,
-                        factor: factor,
                         text: `${baseNum} × ${factor}`,
                         ans: baseNum * factor,
                         isImpossible: false
@@ -345,8 +341,6 @@
                 if (selectedOp === 'div' || selectedOp === 'both') {
                     mainQueue.push({
                         type: 'div',
-                        base: baseNum, 
-                        factor: factor, 
                         text: `${baseNum * factor} ÷ ${baseNum}`,
                         ans: factor,
                         isImpossible: false
@@ -355,8 +349,6 @@
                     if (baseNum === 1) {
                         mainQueue.push({
                             type: 'div',
-                            base: baseNum,
-                            factor: factor,
                             text: `${factor} ÷ ${factor}`,
                             ans: 1,
                             isImpossible: false
@@ -366,12 +358,10 @@
             }
         });
 
-        // 2. Обробка спеціального режиму "0 та 1", якщо кнопку активовано
+        // 2. Спеціальний інтегрований режим "0 та 1"
         if (isZeroOneSpecialSelected) {
-            // Для різноманітності беремо числа від 0 до 10
             for (let i = 0; i <= 10; i++) {
                 if (selectedOp === 'mult' || selectedOp === 'both') {
-                    // Множення на 0 та 1 з обох сторін
                     mainQueue.push({ type: 'mult', text: `${i} × 0`, ans: 0, isImpossible: false });
                     mainQueue.push({ type: 'mult', text: `${i} × 1`, ans: i, isImpossible: false });
                     if (i !== 0 && i !== 1) {
@@ -381,29 +371,20 @@
                 }
                 
                 if (selectedOp === 'div' || selectedOp === 'both') {
-                    // Ділення на 1
                     if (i > 0) {
                         mainQueue.push({ type: 'div', text: `${i} ÷ 1`, ans: i, isImpossible: false });
                         mainQueue.push({ type: 'div', text: `${i} ÷ ${i}`, ans: 1, isImpossible: false });
-                    }
-                    // Ділення нуля на число (0 ÷ 5 = 0)
-                    if (i > 0) {
                         mainQueue.push({ type: 'div', text: `0 ÷ ${i}`, ans: 0, isImpossible: false });
-                    }
-                    // ПАСТКА: Ділення числа на 0 (наприклад, 5 ÷ 0)
-                    if (i > 0) {
-                        mainQueue.push({ type: 'div', text: `${i} ÷ 0`, ans: null, isImpossible: true });
+                        mainQueue.push({ type: 'div', text: `${i} ÷ 0`, ans: 9999, isImpossible: true }); // Задано числове значення замість null, щоб уникнути збоїв фільтрації
                     }
                 }
             }
         }
 
-        // Очищення дублікатів прикладів, які могли накластися (якщо обрано і "на 1" і спецрежим)
+        // Очищення дублікатів
         const uniqueTexts = new Set();
         mainQueue = mainQueue.filter(item => {
-            if (uniqueTexts.has(item.text)) {
-                return false;
-            }
+            if (uniqueTexts.has(item.text)) return false;
             uniqueTexts.add(item.text);
             return true;
         });
@@ -472,21 +453,18 @@
         setTimeout(() => inputField.focus(), 50);
     }
 
-    // Параметр clickedImpossible вказує, яку кнопку натиснуто (Перевірити чи неможливо)
     function checkAnswer(clickedImpossible) {
         const userAns = parseInt(inputField.value);
         const feedback = document.getElementById('feedback');
 
         if (inputField.disabled) return;
-        if (!clickedImpossible && isNaN(userAns)) return; // Для звичайної перевірки інпут має бути заповнений
+        if (!clickedImpossible && isNaN(userAns)) return; 
 
         let isCorrect = false;
 
         if (currentQuestion.isImpossible) {
-            // Якщо приклад неможливий, єдиний шлях до успіху — натиснути кнопку "неможливо"
             isCorrect = clickedImpossible;
         } else {
-            // Для звичайних прикладів кнопка "неможливо" автоматично дає помилку
             isCorrect = !clickedImpossible && (userAns === currentQuestion.ans);
         }
 
