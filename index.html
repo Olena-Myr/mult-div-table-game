@@ -6,10 +6,37 @@
     <title>Розумний тренажер: Таблиця множення та ділення</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
-        body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; padding: 20px; }
-        .container { background: white; width: 100%; max-width: 500px; border-radius: 16px; padding: 25px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); text-align: center; }
-        h2 { color: #2c3e50; margin-top: 0; }
         
+        body { 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        
+        .main-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 500px; /* Картка гри завжди тримає зручний і гарний розмір */
+        }
+
+        .container { 
+            background: white; 
+            width: 100%; 
+            border-radius: 16px; 
+            padding: 25px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15); 
+            text-align: center; 
+        }
+        
+        h2 { color: #2c3e50; margin-top: 0; }
         .section-title { font-weight: bold; margin: 15px 0 8px 0; color: #5a6c7d; text-align: left; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
         
         /* Сітка для кнопок чисел */
@@ -27,7 +54,7 @@
         .start-btn { width: 100%; padding: 15px; background: #48bb78; color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .start-btn:hover { background: #38a169; }
 
-        /* Екрани */
+        /* Екрани гри */
         .hidden { display: none; }
         .question-text { font-size: 56px; font-weight: bold; color: #2d3748; margin: 20px 0; }
         .input-box { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
@@ -42,53 +69,117 @@
         /* Екран фіналу */
         .win-title { color: #38a169; font-size: 32px; margin-bottom: 10px; }
         .win-text { font-size: 18px; color: #4a5568; margin-bottom: 25px; line-height: 1.5; }
+
+        /* ---------------------------------------------------- */
+        /* БЛОК АВТОРСТВА ТА ПОСИЛАНЬ (Завжди внизу по центру) */
+        .author-box {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            font-size: 14px;
+            color: #4a5568;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .author-text {
+            margin: 0;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .author-link {
+            display: inline-flex;
+            align-items: center;
+            color: #ffffff;
+            background: #4c51bf;
+            padding: 6px 14px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .author-link:hover {
+            background: #3b3f9a;
+            transform: translateY(-1px);
+        }
+
+        /* На ПК екранах вибудовуємо текст та посилання в один красивий горизонтальний рядок */
+        @media (min-width: 600px) {
+            .author-box {
+                flex-direction: row;
+                justify-content: space-between;
+                gap: 15px;
+            }
+            .author-text {
+                text-align: left;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- ЕКРАН НАЛАШТУВАНЬ -->
-    <div id="setup-screen">
-        <h2>Налаштування гри</h2>
-        
-        <div class="section-title">1. Яку таблицю вивчаємо?</div>
-        <div class="numbers-grid" id="numbers-container"></div>
-        <button class="select-all-btn" id="toggle-all-btn" onclick="toggleAllNumbers()">Обрати усі</button>
+<div class="main-wrapper">
+    <!-- КОНТЕЙНЕР ГРИ -->
+    <div class="container">
+        <!-- ЕКРАН НАЛАШТУВАНЬ -->
+        <div id="setup-screen">
+            <h2>Налаштування гри</h2>
+            
+            <div class="section-title">1. Яку таблицю вивчаємо?</div>
+            <div class="numbers-grid" id="numbers-container"></div>
+            <button class="select-all-btn" id="toggle-all-btn" onclick="toggleAllNumbers()">Обрати усі</button>
 
-        <div class="section-title">2. Оберіть дію</div>
-        <div class="ops-group">
-            <button class="op-btn selected" id="op-mult" onclick="setOperation('mult')">Лише множення</button>
-            <button class="op-btn" id="op-div" onclick="setOperation('div')">Лише ділення</button>
-            <button class="op-btn" id="op-both" onclick="setOperation('both')">Множення і ділення</button>
+            <div class="section-title">2. Оберіть дію</div>
+            <div class="ops-group">
+                <button class="op-btn selected" id="op-mult" onclick="setOperation('mult')">Лише множення</button>
+                <button class="op-btn" id="op-div" onclick="setOperation('div')">Лише ділення</button>
+                <button class="op-btn" id="op-both" onclick="setOperation('both')">Множення і ділення</button>
+            </div>
+
+            <button class="start-btn" onclick="startGame()">Почати гру 🚀</button>
         </div>
 
-        <button class="start-btn" onclick="startGame()">Почати гру 🚀</button>
+        <!-- ЕКРАН ГРИ -->
+        <div id="game-screen" class="hidden">
+            <div id="round-indicator" style="color:#718096; font-weight: bold; font-size: 14px;">Залишилось прикладів: <span id="examples-left">0</span></div>
+            <div class="question-text" id="question">? × ?</div>
+            
+            <div class="input-box">
+                <input type="number" id="user-answer" placeholder="?" pattern="[0-9]*" inputmode="numeric">
+                <button class="action-btn" onclick="checkAnswer()">Перевірити</button>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="stats">
+                <div>Правильно одразу: <span id="stat-correct" style="color:#48bb78; font-weight:bold;">0</span></div>
+                <div>Помилок за гру: <span id="stat-wrong" style="color:#e53e3e; font-weight:bold;">0</span></div>
+            </div>
+            <button class="back-btn" onclick="showSetup()">Вийти в меню</button>
+        </div>
+
+        <!-- ЕКРАН ПЕРЕМОГИ -->
+        <div id="win-screen" class="hidden">
+            <div class="win-title">🎉 Ура! Перемога! 🎉</div>
+            <p class="win-text" id="win-summary">Ви успішно розв'язали всі приклади та вивчили обрану таблицю без жодної помилки!</p>
+            <button class="start-btn" onclick="showSetup()">Грати знову 🔄</button>
+        </div>
     </div>
 
-    <!-- ЕКРАН ГРИ -->
-    <div id="game-screen" class="hidden">
-        <div id="round-indicator" style="color:#718096; font-weight: bold; font-size: 14px;">Залишилось прикладів: <span id="examples-left">0</span></div>
-        <div class="question-text" id="question">? × ?</div>
-        
-        <div class="input-box">
-            <input type="number" id="user-answer" placeholder="?" pattern="[0-9]*" inputmode="numeric">
-            <button class="action-btn" onclick="checkAnswer()">Перевірити</button>
-        </div>
-
-        <div class="feedback" id="feedback"></div>
-
-        <div class="stats">
-            <div>Правильно одразу: <span id="stat-correct" style="color:#48bb78; font-weight:bold;">0</span></div>
-            <div>Помилок за гру: <span id="stat-wrong" style="color:#e53e3e; font-weight:bold;">0</span></div>
-        </div>
-        <button class="back-btn" onclick="showSetup()">Вийти в меню</button>
-    </div>
-
-    <!-- ЕКРАН ПЕРЕМОГИ -->
-    <div id="win-screen" class="hidden">
-        <div class="win-title">🎉 Ура! Перемога! 🎉</div>
-        <p class="win-text" id="win-summary">Ви успішно розв'язали всі приклади та вивчили обрану таблицю без жодної помилки!</p>
-        <button class="start-btn" onclick="showSetup()">Грати знову 🔄</button>
+    <!-- БЛОК АВТОРСТВА (ЗАВЖДИ ЗНИЗУ) -->
+    <div class="author-box">
+        <p class="author-text">Розробила <b>Олена Мироненко</b> для освітнього простору <b>"Тематики"</b></p>
+        <a href="https://linktr.ee/optematiki" target="_blank" class="author-link">Відвідати "Тематики" 🌐</a>
     </div>
 </div>
 
@@ -96,17 +187,15 @@
     let selectedNumbers = [];
     let selectedOp = 'mult'; 
     
-    // Нова логіка черги прикладів
-    let mainQueue = [];       // Основний список прикладів без повторів
-    let wrongQueue = [];      // Список прикладів, де дитина зробила помилку
+    let mainQueue = [];       
+    let wrongQueue = [];      
     let currentQuestion = null;
-    let isWorkingOnErrors = false; // Чи проходимо ми роботу над помилками
+    let isWorkingOnErrors = false; 
 
     let correctFirstTimeCount = 0;
     let totalWrongCount = 0;
-    let hasErrorOnCurrentQuestion = false; // Прапорець, щоб знати, чи помилявся у цьому поточному питанні
+    let hasErrorOnCurrentQuestion = false; 
 
-    // Генерація кнопок чисел від 1 до 12
     const grid = document.getElementById('numbers-container');
     for (let i = 1; i <= 12; i++) {
         const btn = document.createElement('button');
@@ -166,14 +255,12 @@
         if (op === 'both') document.getElementById('op-both').classList.add('selected');
     }
 
-    // Створення перемішаного масиву прикладів
     function generateGameQueues() {
         mainQueue = [];
         wrongQueue = [];
         isWorkingOnErrors = false;
 
         selectedNumbers.forEach(baseNum => {
-            // Для кожного числа генеруємо рівно 10 прикладів (від 1 до 10)
             for (let factor = 1; factor <= 10; factor++) {
                 if (selectedOp === 'mult' || selectedOp === 'both') {
                     mainQueue.push({
@@ -187,8 +274,8 @@
                 if (selectedOp === 'div' || selectedOp === 'both') {
                     mainQueue.push({
                         type: 'div',
-                        base: baseNum, // дільник
-                        factor: factor, // відповідь
+                        base: baseNum, 
+                        factor: factor, 
                         text: `${baseNum * factor} ÷ ${baseNum}`,
                         ans: factor
                     });
@@ -196,7 +283,6 @@
             }
         });
 
-        // Перемішуємо основну колоду прикладів випадковим чином
         mainQueue.sort(() => Math.random() - 0.5);
     }
 
@@ -230,13 +316,11 @@
     function nextQuestion() {
         hasErrorOnCurrentQuestion = false;
         
-        // Перевіряємо, з якої черги брати приклад
         if (mainQueue.length > 0) {
             isWorkingOnErrors = false;
             currentQuestion = mainQueue.shift();
             document.getElementById('round-indicator').innerHTML = `Основний етап. Залишилось: <span id="examples-left">${mainQueue.length + 1}</span>`;
         } else if (wrongQueue.length > 0) {
-            // Якщо основні закінчились, перемішуємо помилки і даємо їх по колу
             if (!isWorkingOnErrors) {
                 isWorkingOnErrors = true;
                 wrongQueue.sort(() => Math.random() - 0.5);
@@ -244,7 +328,6 @@
             currentQuestion = wrongQueue.shift();
             document.getElementById('round-indicator').innerHTML = `🛑 Робота над помилками! Залишилось виправити: <span id="examples-left" style="color:#e53e3e">${wrongQueue.length + 1}</span>`;
         } else {
-            // Обидві черги порожні — дитина все рішила без помилок!
             endGame();
             return;
         }
@@ -271,7 +354,6 @@
                 document.getElementById('stat-correct').innerText = correctFirstTimeCount;
             }
             
-            // Переходимо до наступного прикладу через секунду
             setTimeout(nextQuestion, 1000);
         } else {
             feedback.innerText = `❌ Неправильно. Буде: ${currentQuestion.ans}`;
@@ -282,7 +364,6 @@
                 document.getElementById('stat-wrong').innerText = totalWrongCount;
                 hasErrorOnCurrentQuestion = true;
                 
-                // Додаємо приклад у чергу помилок (якщо його там ще немає)
                 const alreadyInWrong = wrongQueue.some(q => q.text === currentQuestion.text);
                 if (!alreadyInWrong) {
                     wrongQueue.push(currentQuestion);
@@ -305,7 +386,6 @@
         }
     }
 
-    // Перевірка по натисканню Enter
     document.getElementById('user-answer').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') checkAnswer();
     });
