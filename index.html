@@ -39,12 +39,14 @@
         h2 { color: #2c3e50; margin-top: 0; }
         .section-title { font-weight: bold; margin: 15px 0 8px 0; color: #5a6c7d; text-align: left; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
         
+        /* Сітка для кнопок чисел */
         .numbers-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
         .num-btn { padding: 10px; border: 2px solid #cbd5e0; background: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s; }
         .num-btn.selected { background: #3182ce; color: white; border-color: #3182ce; }
         .select-all-btn { width: 100%; padding: 10px; background: #edf2f7; border: 2px dashed #cbd5e0; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
         .select-all-btn.active { background: #e2e8f0; border-color: #a0aec0; }
 
+        /* Кнопки операцій */
         .ops-group { display: flex; gap: 8px; margin-bottom: 25px; }
         .op-btn { flex: 1; padding: 12px; border: 2px solid #cbd5e0; background: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .op-btn.selected { background: #3182ce; color: white; border-color: #3182ce; }
@@ -52,39 +54,24 @@
         .start-btn { width: 100%; padding: 15px; background: #48bb78; color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .start-btn:hover { background: #38a169; }
 
+        /* Екрани гри */
         .hidden { display: none !important; }
         .question-text { font-size: 56px; font-weight: bold; color: #2d3748; margin: 20px 0; }
-        
-        .input-box { display: flex; gap: 10px; justify-content: center; margin-bottom: 15px; }
+        .input-box { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
         input { font-size: 24px; width: 140px; padding: 10px; border: 2px solid #cbd5e0; border-radius: 8px; text-align: center; outline: none; }
         input:focus { border-color: #3182ce; }
         .action-btn { font-size: 18px; padding: 10px 20px; background: #4a5568; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
         
-        .zero-danger-btn { 
-            width: 100%; 
-            padding: 12px; 
-            font-size: 16px; 
-            font-weight: bold; 
-            background: #fff; 
-            color: #e53e3e; 
-            border: 2px solid #e53e3e; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            transition: 0.2s; 
-            margin-bottom: 15px;
-        }
-        .zero-danger-btn:hover { 
-            background: #fff5f5; 
-            box-shadow: 0 4px 8px rgba(229, 62, 62, 0.15);
-        }
-
         .feedback { font-size: 20px; font-weight: bold; min-height: 28px; margin-top: 10px; }
         .stats { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0; color: #718096; font-size: 14px; }
         .back-btn { margin-top: 15px; background: none; border: none; color: #3182ce; cursor: pointer; text-decoration: underline; font-size: 14px; }
 
+        /* Екран фіналу */
         .win-title { color: #38a169; font-size: 32px; margin-bottom: 10px; }
         .win-text { font-size: 18px; color: #4a5568; margin-bottom: 25px; line-height: 1.5; }
 
+        /* ---------------------------------------------------- */
+        /* РЕАЛІСТИЧНИЙ БЛОК АВТОРСТВА З РЕАЛЬНИМИ КОЛЬОРАМИ */
         .author-box {
             background: rgba(255, 255, 255, 0.9);
             padding: 15px 20px;
@@ -99,27 +86,89 @@
             gap: 12px;
             align-items: center;
             justify-content: center;
+            transition: 0.3s ease;
         }
-        .author-text { margin: 0; font-weight: 500; line-height: 1.4; }
-        .social-links { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center; }
-        .social-icon { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; color: white; transition: 0.2s; }
-        .social-icon svg { width: 18px; height: 18px; fill: currentColor; }
-        .social-icon:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        
+        .author-text {
+            margin: 0;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Загальний стиль для кнопок-іконок */
+        .social-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            transition: 0.2s;
+        }
+
+        .social-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        /* Реальні бренді-кольори */
         .icon-fb { background: #1877F2; }
         .icon-ig { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
         .icon-yt { background: #FF0000; }
-        .social-text-link { display: inline-flex; align-items: center; background: #254B25; color: white; padding: 0 14px; height: 36px; border-radius: 18px; text-decoration: none; font-weight: bold; font-size: 13px; transition: 0.2s; }
-        .social-text-link:hover { background: #193219; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+
+        /* Реальний колір бренду Linktree */
+        .social-text-link {
+            display: inline-flex;
+            align-items: center;
+            background: #254B25; 
+            color: white;
+            padding: 0 14px;
+            height: 36px;
+            border-radius: 18px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .social-text-link:hover {
+            background: #193219;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
 
         @media (min-width: 600px) {
-            .author-box { flex-direction: row; justify-content: space-between; gap: 15px; }
-            .author-text { text-align: left; }
+            .author-box {
+                flex-direction: row;
+                justify-content: space-between;
+                gap: 15px;
+            }
+            .author-text {
+                text-align: left;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="main-wrapper">
+    <!-- КОНТЕЙНЕР ГРИ -->
     <div class="container">
         <!-- ЕКРАН НАЛАШТУВАНЬ -->
         <div id="setup-screen">
@@ -144,14 +193,10 @@
             <div id="round-indicator" style="color:#718096; font-weight: bold; font-size: 14px;">Залишилось прикладів: <span id="examples-left">0</span></div>
             <div class="question-text" id="question">? × ?</div>
             
-            <div class="input-box" id="standard-input-box">
+            <div class="input-box">
                 <input type="number" id="user-answer" placeholder="?" pattern="[0-9]*" inputmode="numeric">
-                <button class="action-btn" id="check-btn" onclick="checkAnswer()">Перевірити</button>
+                <button class="action-btn" onclick="checkAnswer()">Перевірити</button>
             </div>
-
-            <button class="zero-danger-btn hidden" id="zero-danger-rule" onclick="clickZeroRuleBtn()">
-                На 0 ділити не можна! 🛑
-            </button>
 
             <div class="feedback" id="feedback"></div>
 
@@ -165,24 +210,28 @@
         <!-- ЕКРАН ПЕРЕМОГИ -->
         <div id="win-screen" class="hidden">
             <div class="win-title">🎉 Ура! Перемога! 🎉</div>
-            <p class="win-text" id="win-summary">Ви успішно розв'язали всі приклади!</p>
+            <p class="win-text" id="win-summary">Ви успішно розв'язали всі приклади та вивчили обрану таблицю без жодної помилки!</p>
             <button class="start-btn" onclick="showSetup()">Грати знову 🔄</button>
         </div>
     </div>
 
-    <!-- БЛОК АВТОРСТВА -->
+    <!-- БЛОК АВТОРСТВА (Керується через JavaScript, ховається під час гри) -->
     <div class="author-box" id="footer-author">
         <p class="author-text">Розробила <b>Олена Мироненко</b> для освітнього простору <b>"Тематики"</b></p>
         <div class="social-links">
+            <!-- Facebook -->
             <a href="https://www.facebook.com/tematiki/" target="_blank" class="social-icon icon-fb" title="Facebook">
                 <svg viewBox="0 0 24 24"><path d="M9 8H7v3h2v9h3v-9h2.725l.425-3H12V6.275c0-.825.225-1.15 1.15-1.15H15V2h-2.625C10.075 2 9 3.125 9 5.35V8z"/></svg>
             </a>
+            <!-- Instagram -->
             <a href="https://www.instagram.com/optematiki" target="_blank" class="social-icon icon-ig" title="Instagram">
-                <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0 3.259-.014 3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
             </a>
+            <!-- YouTube -->
             <a href="https://www.youtube.com/@optematiki" target="_blank" class="social-icon icon-yt" title="YouTube">
                 <svg viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.87.508 9.388.508 9.388.508s7.518 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
             </a>
+            <!-- Інші сторінки -->
             <a href="https://linktr.ee/optematiki" target="_blank" class="social-text-link">інші сторінки 🌐</a>
         </div>
     </div>
@@ -200,12 +249,11 @@
     let correctFirstTimeCount = 0;
     let totalWrongCount = 0;
     let hasErrorOnCurrentQuestion = false; 
-    let isProcessing = false; // Прапорець захисту від подвійних кліків
 
     const footerAuthor = document.getElementById('footer-author');
 
     const grid = document.getElementById('numbers-container');
-    for (let i = 0; i <= 15; i++) {
+    for (let i = 1; i <= 12; i++) {
         const btn = document.createElement('button');
         btn.className = 'num-btn';
         btn.innerText = `на ${i}`;
@@ -228,13 +276,13 @@
         const buttons = document.querySelectorAll('.num-btn');
         const btnAll = document.getElementById('toggle-all-btn');
         
-        if (selectedNumbers.length === 16) {
+        if (selectedNumbers.length === 12) {
             selectedNumbers = [];
             buttons.forEach(b => b.classList.remove('selected'));
             btnAll.innerText = "Обрати усі";
             btnAll.classList.remove('active');
         } else {
-            selectedNumbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+            selectedNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
             buttons.forEach(b => b.classList.add('selected'));
             btnAll.innerText = "Зняти виділення";
             btnAll.classList.add('active');
@@ -243,7 +291,7 @@
 
     function updateSelectAllButtonState() {
         const btnAll = document.getElementById('toggle-all-btn');
-        if (selectedNumbers.length === 16) {
+        if (selectedNumbers.length === 12) {
             btnAll.innerText = "Зняти виділення";
             btnAll.classList.add('active');
         } else {
@@ -269,48 +317,24 @@
         isWorkingOnErrors = false;
 
         selectedNumbers.forEach(baseNum => {
-            if (selectedOp === 'mult' || selectedOp === 'both') {
-                for (let factor = 1; factor <= 10; factor++) {
+            for (let factor = 1; factor <= 10; factor++) {
+                if (selectedOp === 'mult' || selectedOp === 'both') {
                     mainQueue.push({
                         type: 'mult',
+                        base: baseNum,
+                        factor: factor,
                         text: `${baseNum} × ${factor}`,
                         ans: baseNum * factor
                     });
                 }
-            }
-            
-            if (selectedOp === 'div' || selectedOp === 'both') {
-                if (baseNum === 0) {
-                    for (let factor = 1; factor <= 5; factor++) {
-                        mainQueue.push({
-                            type: 'div_by_zero',
-                            text: `${factor} ÷ 0`,
-                            ans: 'error'
-                        });
-                    }
-                } else if (baseNum === 1) {
-                    for (let factor = 1; factor <= 10; factor++) {
-                        mainQueue.push({
-                            type: 'div',
-                            text: `${factor} ÷ 1`,
-                            ans: factor
-                        });
-                        if (factor !== 1) {
-                            mainQueue.push({
-                                type: 'div',
-                                text: `${factor} ÷ ${factor}`,
-                                ans: 1
-                            });
-                        }
-                    }
-                } else {
-                    for (let factor = 1; factor <= 10; factor++) {
-                        mainQueue.push({
-                            type: 'div',
-                            text: `${baseNum * factor} ÷ ${baseNum}`,
-                            ans: factor
-                        });
-                    }
+                if (selectedOp === 'div' || selectedOp === 'both') {
+                    mainQueue.push({
+                        type: 'div',
+                        base: baseNum, 
+                        factor: factor, 
+                        text: `${baseNum * factor} ÷ ${baseNum}`,
+                        ans: factor
+                    });
                 }
             }
         });
@@ -330,11 +354,11 @@
         document.getElementById('win-screen').classList.add('hidden');
         document.getElementById('game-screen').classList.remove('hidden');
         
+        // ХОВАЄМО підпис автора, щоб дитина не відволікалась
         footerAuthor.classList.add('hidden');
         
         correctFirstTimeCount = 0;
         totalWrongCount = 0;
-        isProcessing = false;
         document.getElementById('stat-correct').innerText = correctFirstTimeCount;
         document.getElementById('stat-wrong').innerText = totalWrongCount;
         document.getElementById('feedback').innerText = "";
@@ -347,12 +371,12 @@
         document.getElementById('win-screen').classList.add('hidden');
         document.getElementById('setup-screen').classList.remove('hidden');
         
+        // ПОКАЗУЄМО підпис автора знову в меню налаштувань
         footerAuthor.classList.remove('hidden');
     }
 
     function nextQuestion() {
         hasErrorOnCurrentQuestion = false;
-        isProcessing = false; // Знімаємо блокування для нового питання
         
         if (mainQueue.length > 0) {
             isWorkingOnErrors = false;
@@ -364,63 +388,26 @@
                 wrongQueue.sort(() => Math.random() - 0.5);
             }
             currentQuestion = wrongQueue.shift();
-            document.getElementById('round-indicator').innerHTML = `🛑 Робота над помилками! Залишилось: <span id="examples-left" style="color:#e53e3e">${wrongQueue.length + 1}</span>`;
+            document.getElementById('round-indicator').innerHTML = `🛑 Робота над помилками! Залишилось виправити: <span id="examples-left" style="color:#e53e3e">${wrongQueue.length + 1}</span>`;
         } else {
             endGame();
             return;
         }
 
         document.getElementById('question').innerText = currentQuestion.text;
-        document.getElementById('feedback').innerText = "";
-        
-        const dangerBtn = document.getElementById('zero-danger-rule');
-        const inputField = document.getElementById('user-answer');
-        
-        if (selectedNumbers.includes(0)) {
-            dangerBtn.classList.remove('hidden');
-        } else {
-            dangerBtn.classList.add('hidden');
-        }
-
-        inputField.value = '';
-        inputField.disabled = false;
-        inputField.focus();
+        const input = document.getElementById('user-answer');
+        input.value = '';
+        input.focus();
     }
 
     function checkAnswer() {
-        if (isProcessing) return; // Захист від подвійного кліку
-
         const input = document.getElementById('user-answer');
         const userAns = parseInt(input.value);
+        const feedback = document.getElementById('feedback');
+
         if (isNaN(userAns)) return;
 
-        if (currentQuestion.type === 'div_by_zero') {
-            processAnswerResult(false, "На 0 ділити не можна! (Треба тиснути червону кнопку)");
-        } else {
-            processAnswerResult(userAns === currentQuestion.ans, currentQuestion.ans);
-        }
-    }
-
-    function clickZeroRuleBtn() {
-        if (isProcessing) return;
-
-        const inputField = document.getElementById('user-answer');
-        inputField.value = ''; 
-
-        if (currentQuestion.type === 'div_by_zero') {
-            processAnswerResult(true, "На 0 ділити не можна!");
-        } else {
-            processAnswerResult(false, currentQuestion.ans);
-        }
-    }
-
-    function processAnswerResult(isCorrect, correctText) {
-        const feedback = document.getElementById('feedback');
-        const input = document.getElementById('user-answer');
-
-        if (isCorrect) {
-            isProcessing = true; // Блокуємо систему до показу наступного питання
-            input.disabled = true;
+        if (userAns === currentQuestion.ans) {
             feedback.innerText = "🎉 Правильно!";
             feedback.style.color = "#48bb78";
             
@@ -431,7 +418,7 @@
             
             setTimeout(nextQuestion, 1000);
         } else {
-            feedback.innerText = `❌ Неправильно. Буде: ${correctText}`;
+            feedback.innerText = `❌ Неправильно. Буде: ${currentQuestion.ans}`;
             feedback.style.color = "#e53e3e";
             
             if (!hasErrorOnCurrentQuestion) {
@@ -446,6 +433,21 @@
             }
             input.value = '';
             input.focus();
+        }
+    }
+
+    function endGame() {
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('win-screen').classList.remove('hidden');
+        
+        // ПОКАЗУЄМО підпис автора на екрані перемоги
+        footerAuthor.classList.remove('hidden');
+        
+        const summary = document.getElementById('win-summary');
+        if (totalWrongCount === 0) {
+            summary.innerHTML = `🌟 <b>Ідеальний результат!</b> Ви розв'язали всі приклади з першого разу без жодної помилки! Ти справжній математичний геній!`;
+        } else {
+            summary.innerHTML = `🏆 <b>Чудова робота!</b> Ви розв'язали всі приклади та успішно виправили всі свої помилки (помилок було: ${totalWrongCount}). Тепер ви точно знаєте цю таблицю на відмінно!`;
         }
     }
 
