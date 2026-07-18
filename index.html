@@ -171,10 +171,10 @@
     }
 
     function nextQuestion() {
-        // Випадково беремо одне з обраних користувачем чисел
+        // Випадково беремо одне з обраних користувачем чисел таблиці
         const baseNum = selectedNumbers[Math.floor(Math.random() * selectedNumbers.length)];
-        // Другий множник/дільник завжди випадковий від 1 до 10
-        const randomMultiplier = Math.floor(Math.random() * 10) + 1;
+        // Друге число (множник або результат ділення) від 1 до 10
+        const randomFactor = Math.floor(Math.random() * 10) + 1;
 
         if (selectedOp === 'mult') isMultiplication = true;
         else if (selectedOp === 'div') isMultiplication = false;
@@ -182,14 +182,17 @@
 
         if (isMultiplication) {
             num1 = baseNum;
-            num2 = randomMultiplier;
+            num2 = randomFactor;
             correctAnswer = num1 * num2;
             document.getElementById('question').innerText = `${num1} × ${num2}`;
         } else {
-            // Для ділення: baseNum буде результатом (часткою), щоб ділення завжди було націло
-            num2 = randomMultiplier; // дільник
-            correctAnswer = baseNum;  // відповідь
-            num1 = num2 * correctAnswer; // ділене
+            // ОНОВЛЕНА ЛОГІКА ДІЛЕННЯ:
+            // Тепер baseNum — це дільник (число НА яке ділимо). 
+            // randomFactor — це те, що вийде в результаті ділення.
+            // Ділене (num1) утворюється перемноженням, щоб приклад ділився без залишку.
+            num2 = baseNum;            // дільник (НА обране число)
+            correctAnswer = randomFactor; // відповідь, яку має відгадати дитина
+            num1 = num2 * correctAnswer;  // ділене (велике число в прикладі)
             document.getElementById('question').innerText = `${num1} ÷ ${num2}`;
         }
         
