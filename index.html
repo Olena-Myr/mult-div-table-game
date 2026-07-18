@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тренажер: Таблиця множення та ділення</title>
+    <title>Тренажер: Tabлиця множення та ділення</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
         
@@ -70,10 +70,11 @@
         .win-title { color: #38a169; font-size: 32px; margin-bottom: 10px; }
         .win-text { font-size: 18px; color: #4a5568; margin-bottom: 25px; line-height: 1.5; }
 
-        /* БЛОК АВТОРСТВА */
+        /* ---------------------------------------------------- */
+        /* ОНОВЛЕНИЙ БЛОК АВТОРСТВА З ІКОНКАМИ СОЦМЕРЕЖ */
         .author-box {
             background: rgba(255, 255, 255, 0.85);
-            padding: 12px 20px;
+            padding: 15px 20px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             font-size: 14px;
@@ -82,7 +83,7 @@
             text-align: center;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
             justify-content: center;
         }
@@ -93,25 +94,60 @@
             line-height: 1.4;
         }
 
-        .author-link {
+        /* Контейнер для іконок */
+        .social-links {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Загальний стиль для кнопок-іконок */
+        .social-icon {
             display: inline-flex;
             align-items: center;
-            color: #ffffff;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             background: #4c51bf;
-            padding: 6px 14px;
-            border-radius: 20px;
+            color: white;
+            transition: 0.2s;
+        }
+
+        .social-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-2px);
+            background: #3b3f9a;
+        }
+
+        /* Окремий стиль для текстового посилання "інші" */
+        .social-text-link {
+            display: inline-flex;
+            align-items: center;
+            background: #718096;
+            color: white;
+            padding: 0 14px;
+            height: 36px;
+            border-radius: 18px;
             text-decoration: none;
             font-weight: bold;
             font-size: 13px;
             transition: 0.2s;
-            white-space: nowrap;
         }
 
-        .author-link:hover {
-            background: #3b3f9a;
-            transform: translateY(-1px);
+        .social-text-link:hover {
+            background: #4a5568;
+            transform: translateY(-2px);
         }
 
+        /* Медіа-запит для великих екранів ПК */
         @media (min-width: 600px) {
             .author-box {
                 flex-direction: row;
@@ -174,10 +210,25 @@
         </div>
     </div>
 
-    <!-- БЛОК АВТОРСТВА -->
+    <!-- НОВИЙ БЛОК АВТОРСТВА З СОЦМЕРЕЖАМИ -->
     <div class="author-box">
         <p class="author-text">Розробила <b>Олена Мироненко</b> для освітнього простору <b>"Тематики"</b></p>
-        <a href="https://linktr.ee/optematiki" target="_blank" class="author-link">Відвідати "Тематики" 🌐</a>
+        <div class="social-links">
+            <!-- Facebook -->
+            <a href="https://www.facebook.com/tematiki/" target="_blank" class="social-icon" title="Facebook">
+                <svg viewBox="0 0 24 24"><path d="M9 8H7v3h2v9h3v-9h2.725l.425-3H12V6.275c0-.825.225-1.15 1.15-1.15H15V2h-2.625C10.075 2 9 3.125 9 5.35V8z"/></svg>
+            </a>
+            <!-- Instagram -->
+            <a href="https://www.instagram.com/optematiki" target="_blank" class="social-icon" title="Instagram">
+                <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+            </a>
+            <!-- YouTube -->
+            <a href="https://www.youtube.com/@optematiki" target="_blank" class="social-icon" title="YouTube">
+                <svg viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.87.508 9.388.508 9.388.508s7.518 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </a>
+            <!-- Інші сторінки -->
+            <a href="https://linktr.ee/optematiki" target="_blank" class="social-text-link">інші сторінки 🌐</a>
+        </div>
     </div>
 </div>
 
