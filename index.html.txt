@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренажер: Таблиця множення та ділення</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; padding: 20px; }
+        .container { background: white; width: 100%; max-width: 500px; border-radius: 16px; padding: 25px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); text-align: center; }
+        h2 { color: #2c3e50; margin-top: 0; }
+        
+        .section-title { font-weight: bold; margin: 15px 0 8px 0; color: #5a6c7d; text-align: left; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        /* Сітка для кнопок чисел */
+        .numbers-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+        .num-btn { padding: 10px; border: 2px solid #cbd5e0; background: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s; }
+        .num-btn.selected { background: #3182ce; color: white; border-color: #3182ce; }
+        .select-all-btn { width: 100%; padding: 10px; background: #edf2f7; border: 2px dashed #cbd5e0; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
+        .select-all-btn.active { background: #e2e8f0; border-color: #a0aec0; }
+
+        /* Кнопки операцій */
+        .ops-group { display: flex; gap: 8px; margin-bottom: 25px; }
+        .op-btn { flex: 1; padding: 12px; border: 2px solid #cbd5e0; background: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .op-btn.selected { background: #3182ce; color: white; border-color: #3182ce; }
+        
+        .start-btn { width: 100%; padding: 15px; background: #48bb78; color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .start-btn:hover { background: #38a169; }
+
+        /* Екран самої гри */
+        .hidden { display: none; }
+        .question-text { font-size: 56px; font-weight: bold; color: #2d3748; margin: 20px 0; }
+        .input-box { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        input { font-size: 24px; width: 140px; padding: 10px; border: 2px solid #cbd5e0; border-radius: 8px; text-align: center; outline: none; }
+        input:focus { border-color: #3182ce; }
+        .action-btn { font-size: 18px; padding: 10px 20px; background: #4a5568; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        
+        .feedback { font-size: 20px; font-weight: bold; min-height: 28px; margin-top: 10px; }
+        .stats { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0; color: #718096; }
+        .back-btn { margin-top: 15px; background: none; border: none; color: #3182ce; cursor: pointer; text-decoration: underline; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- ЕКРАН НАЛАШТУВАНЬ -->
+    <div id="setup-screen">
+        <h2>Налаштування гри</h2>
+        
+        <div class="section-title">1. Яку таблицю вивчаємо?</div>
+        <div class="numbers-grid" id="numbers-container">
+            <!-- Кнопки від 1 до 12 згенеруються через JavaScript -->
+        </div>
+        <button class="select-all-btn" id="toggle-all-btn" onclick="toggleAllNumbers()">Обрати усі</button>
+
+        <div class="section-title">2. Оберіть дію</div>
+        <div class="ops-group">
+            <button class="op-btn selected" id="op-mult" onclick="setOperation('mult')">Лише множення</button>
+            <button class="op-btn" id="op-div" onclick="setOperation('div')">Лише ділення</button>
+            <button class="op-btn" id="op-both" onclick="setOperation('both')">Множення і ділення</button>
+        </div>
+
+        <button class="start-btn" onclick="startGame()">Почати гру 🚀</button>
+    </div>
+
+    <!-- ЕКРАН ГРИ -->
+    <div id="game-screen" class="hidden">
+        <h3 style="color:#718096; margin:0;">Поточне питання:</h3>
+        <div class="question-text" id="question">? × ?</div>
+        
+        <div class="input-box">
+            <input type="number" id="user-answer" placeholder="?" pattern="[0-9]*" inputmode="numeric">
+            <button class="action-btn" onclick="checkAnswer()">Перевірити</button>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <div class="stats">
+            <div>Правильно: <span id="stat-correct" style="color:#48bb78; font-weight:bold;">0</span></div>
+            <div>Помилок: <span id="stat-wrong" style="color:#e53e3e; font-weight:bold;">0</span></div>
+        </div>
+        <button class="back-btn" onclick="showSetup()">Змінити налаштування</button>
+    </div>
+</div>
+
+<script>
+    let selectedNumbers = [];
+    let selectedOp = 'mult'; // 'mult', 'div', 'both'
+    let num1, num2, isMultiplication, correctAnswer;
+    let correctCount = 0;
+    let wrongCount = 0;
+
+    // Геренація кнопок чисел від 1 до 12
+    const grid = document.getElementById('numbers-container');
+    for (let i = 1; i <= 12; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'num-btn';
+        btn.innerText = `на ${i}`;
+        btn.onclick = () => toggleNumber(i, btn);
+        grid.appendChild(btn);
+    }
+
+    function toggleNumber(num, btn) {
+        if (selectedNumbers.includes(num)) {
+            selectedNumbers = selectedNumbers.filter(n => n !== num);
+            btn.classList.remove('selected');
+        } else {
+            selectedNumbers.push(num);
+            btn.classList.add('selected');
+        }
+        updateSelectAllButtonState();
+    }
+
+    function toggleAllNumbers() {
+        const buttons = document.querySelectorAll('.num-btn');
+        const btnAll = document.getElementById('toggle-all-btn');
+        
+        if (selectedNumbers.length === 12) {
+            selectedNumbers = [];
+            buttons.forEach(b => b.classList.remove('selected'));
+            btnAll.innerText = "Обрати усі";
+            btnAll.classList.remove('active');
+        } else {
+            selectedNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+            buttons.forEach(b => b.classList.add('selected'));
+            btnAll.innerText = "Зняти виділення";
+            btnAll.classList.add('active');
+        }
+    }
+
+    function updateSelectAllButtonState() {
+        const btnAll = document.getElementById('toggle-all-btn');
+        if (selectedNumbers.length === 12) {
+            btnAll.innerText = "Зняти виділення";
+            btnAll.classList.add('active');
+        } else {
+            btnAll.innerText = "Обрати усі";
+            btnAll.classList.remove('active');
+        }
+    }
+
+    function setOperation(op) {
+        selectedOp = op;
+        document.getElementById('op-mult').classList.remove('selected');
+        document.getElementById('op-div').classList.remove('selected');
+        document.getElementById('op-both').classList.remove('selected');
+        
+        if (op === 'mult') document.getElementById('op-mult').classList.add('selected');
+        if (op === 'div') document.getElementById('op-div').classList.add('selected');
+        if (op === 'both') document.getElementById('op-both').classList.add('selected');
+    }
+
+    function startGame() {
+        if (selectedNumbers.length === 0) {
+            alert("Будь ласка, оберіть хоча б одне число для вивчення таблиці!");
+            return;
+        }
+        document.getElementById('setup-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        correctCount = 0;
+        wrongCount = 0;
+        document.getElementById('stat-correct').innerText = correctCount;
+        document.getElementById('stat-wrong').innerText = wrongCount;
+        document.getElementById('feedback').innerText = "";
+        nextQuestion();
+    }
+
+    function showSetup() {
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('setup-screen').classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+        // Випадково беремо одне з обраних користувачем чисел
+        const baseNum = selectedNumbers[Math.floor(Math.random() * selectedNumbers.length)];
+        // Другий множник/дільник завжди випадковий від 1 до 10
+        const randomMultiplier = Math.floor(Math.random() * 10) + 1;
+
+        if (selectedOp === 'mult') isMultiplication = true;
+        else if (selectedOp === 'div') isMultiplication = false;
+        else isMultiplication = Math.random() > 0.5;
+
+        if (isMultiplication) {
+            num1 = baseNum;
+            num2 = randomMultiplier;
+            correctAnswer = num1 * num2;
+            document.getElementById('question').innerText = `${num1} × ${num2}`;
+        } else {
+            // Для ділення: baseNum буде результатом (часткою), щоб ділення завжди було націло
+            num2 = randomMultiplier; // дільник
+            correctAnswer = baseNum;  // відповідь
+            num1 = num2 * correctAnswer; // ділене
+            document.getElementById('question').innerText = `${num1} ÷ ${num2}`;
+        }
+        
+        const input = document.getElementById('user-answer');
+        input.value = '';
+        input.focus();
+    }
+
+    function checkAnswer() {
+        const input = document.getElementById('user-answer');
+        const userAns = parseInt(input.value);
+        const feedback = document.getElementById('feedback');
+
+        if (isNaN(userAns)) return;
+
+        if (userAns === correctAnswer) {
+            feedback.innerText = "🎉 Правильно! Молодець!";
+            feedback.style.color = "#48bb78";
+            correctCount++;
+            document.getElementById('stat-correct').innerText = correctCount;
+            setTimeout(nextQuestion, 1000);
+        } else {
+            feedback.innerText = `❌ Ой... Правильна відповідь: ${correctAnswer}`;
+            feedback.style.color = "#e53e3e";
+            wrongCount++;
+            document.getElementById('stat-wrong').innerText = wrongCount;
+            input.value = '';
+            input.focus();
+        }
+    }
+
+    // Перевірка по натисканню Enter
+    document.getElementById('user-answer').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') checkAnswer();
+    });
+</script>
+
+</body>
+</html>
