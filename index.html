@@ -55,6 +55,16 @@
         /* Кнопка особливого режиму 0 та 1 */
         .special-zero-one-btn { width: 100%; padding: 12px; border: 2px solid #cbd5e0; background: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; margin-bottom: 15px; transition: 0.2s; color: #000; }
         .special-zero-one-btn.selected { background: #3182ce; color: white; border-color: #3182ce; }
+
+        /* Заблокований (неактивний) стан кнопок, коли активний інший режим */
+        .num-btn:disabled,
+        .select-all-btn:disabled,
+        .op-btn:disabled,
+        .special-zero-one-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
         
         .start-btn { width: 100%; padding: 15px; background: #48bb78; color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .start-btn:hover { background: #38a169; }
@@ -265,7 +275,16 @@
         setupWarning.innerText = "";
     }
 
+    // Вмикає/вимикає весь блок "таблиця + дія" (пункт 1), коли активний особливий режим
+    function setTableControlsEnabled(enabled) {
+        document.querySelectorAll('.num-btn').forEach(b => b.disabled = !enabled);
+        document.getElementById('toggle-all-btn').disabled = !enabled;
+        document.querySelectorAll('.op-btn').forEach(b => b.disabled = !enabled);
+    }
+
     function toggleNumber(num, btn) {
+        if (isZeroOneSpecialSelected) return; // на всяк випадок, хоча кнопки й так заблоковані
+
         if (selectedNumbers.includes(num)) {
             selectedNumbers = selectedNumbers.filter(n => n !== num);
             btn.classList.remove('selected');
@@ -278,6 +297,8 @@
     }
 
     function toggleAllNumbers() {
+        if (isZeroOneSpecialSelected) return;
+
         const buttons = document.querySelectorAll('.num-btn');
         const btnAll = document.getElementById('toggle-all-btn');
         
@@ -309,15 +330,28 @@
     function toggleZeroOneSpecial() {
         const btn = document.getElementById('zero-one-btn');
         isZeroOneSpecialSelected = !isZeroOneSpecialSelected;
+
         if (isZeroOneSpecialSelected) {
             btn.classList.add('selected');
+
+            // Це окремий, самостійний режим — знімаємо вибір таблиці й дії,
+            // щоб не було двох підсвічених блоків одночасно
+            selectedNumbers = [];
+            document.querySelectorAll('.num-btn').forEach(b => b.classList.remove('selected'));
+            updateSelectAllButtonState();
+
+            setTableControlsEnabled(false);
         } else {
             btn.classList.remove('selected');
+            setTableControlsEnabled(true);
         }
+
         clearSetupWarning();
     }
 
     function setOperation(op) {
+        if (isZeroOneSpecialSelected) return;
+
         selectedOp = op;
         document.getElementById('op-mult').classList.remove('selected');
         document.getElementById('op-div').classList.remove('selected');
@@ -353,8 +387,8 @@
             }
         });
 
-        // Особливий режим: завжди і множення, і ділення одразу,
-        // незалежно від того, що обрано у пункті 2.
+        // Особливий режим: завжди і множення, і ділення одразу.
+        // Взаємовиключний з таблицею з пункту 1 — обидва блоки одночасно не активні.
         if (isZeroOneSpecialSelected) {
             for (let i = 0; i <= 10; i++) {
                 // 1) множення на 0
