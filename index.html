@@ -58,13 +58,12 @@
         .hidden { display: none !important; }
         .question-text { font-size: 56px; font-weight: bold; color: #2d3748; margin: 20px 0; }
         
-        /* Стандартний блок вводу */
         .input-box { display: flex; gap: 10px; justify-content: center; margin-bottom: 15px; }
         input { font-size: 24px; width: 140px; padding: 10px; border: 2px solid #cbd5e0; border-radius: 8px; text-align: center; outline: none; }
         input:focus { border-color: #3182ce; }
         .action-btn { font-size: 18px; padding: 10px 20px; background: #4a5568; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
         
-        /* Червона кнопка-екстрена для нуля */
+        /* Червона кнопка-правило для прикладів з нулем */
         .zero-danger-btn { 
             width: 100%; 
             padding: 12px; 
@@ -152,13 +151,11 @@
             <div id="round-indicator" style="color:#718096; font-weight: bold; font-size: 14px;">Залишилось прикладів: <span id="examples-left">0</span></div>
             <div class="question-text" id="question">? × ?</div>
             
-            <!-- Поле вводу цифр (Тепер видиме ЗАВЖДИ) -->
             <div class="input-box" id="standard-input-box">
                 <input type="number" id="user-answer" placeholder="?" pattern="[0-9]*" inputmode="numeric">
                 <button class="action-btn" onclick="checkAnswer()">Перевірити</button>
             </div>
 
-            <!-- Червона кнопка-правило для прикладів з нулем -->
             <button class="zero-danger-btn hidden" id="zero-danger-rule" onclick="clickZeroRuleBtn()">
                 На 0 ділити не можна! 🛑
             </button>
@@ -213,7 +210,6 @@
 
     const footerAuthor = document.getElementById('footer-author');
 
-    // Генерація кнопок чисел від 0 до 15
     const grid = document.getElementById('numbers-container');
     for (let i = 0; i <= 15; i++) {
         const btn = document.createElement('button');
@@ -279,7 +275,6 @@
         isWorkingOnErrors = false;
 
         selectedNumbers.forEach(baseNum => {
-            // МНОЖЕННЯ
             if (selectedOp === 'mult' || selectedOp === 'both') {
                 for (let factor = 1; factor <= 10; factor++) {
                     mainQueue.push({
@@ -290,7 +285,6 @@
                 }
             }
             
-            // ДІЛЕННЯ
             if (selectedOp === 'div' || selectedOp === 'both') {
                 if (baseNum === 0) {
                     for (let factor = 1; factor <= 5; factor++) {
@@ -386,7 +380,6 @@
         const dangerBtn = document.getElementById('zero-danger-rule');
         const inputField = document.getElementById('user-answer');
         
-        // ПОКАЗУЄМО червону кнопку, якщо в списку обраних є 0 (про всяк випадок для пильності) або поточне питання містить 0
         if (selectedNumbers.includes(0)) {
             dangerBtn.classList.remove('hidden');
         } else {
@@ -397,13 +390,11 @@
         inputField.focus();
     }
 
-    // Перевірка, коли дитина вводить число вручну
     function checkAnswer() {
         const input = document.getElementById('user-answer');
         const userAns = parseInt(input.value);
         if (isNaN(userAns)) return;
 
-        // Якщо це ділення на 0, а дитина намагається ввести будь-яке число цифрами — це помилка
         if (currentQuestion.type === 'div_by_zero') {
             processAnswerResult(false, "На 0 ділити не можна! (Треба тиснути червону кнопку)");
         } else {
@@ -411,17 +402,13 @@
         }
     }
 
-    // Перевірка, коли дитина тисне червону кнопку
     function clickZeroRuleBtn() {
         const inputField = document.getElementById('user-answer');
-        // Очищуємо поле вводу, якщо дитина там щось писала перед цим
         inputField.value = ''; 
 
         if (currentQuestion.type === 'div_by_zero') {
-            // Якщо це дійсно ділення на 0 — відповідь правильна!
             processAnswerResult(true, "На 0 ділити не можна!");
         } else {
-            // Якщо приклад можна було обчислити (наприклад, 4 х 0 = 0), а вона натиснула кнопку правила — це помилка
             processAnswerResult(false, currentQuestion.ans);
         }
     }
