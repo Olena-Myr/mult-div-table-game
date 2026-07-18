@@ -39,7 +39,7 @@
         h2 { color: #2c3e50; margin-top: 0; }
         .section-title { font-weight: bold; margin: 15px 0 8px 0; color: #5a6c7d; text-align: left; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* Сітка для кнопок чисел (включаючи 0) */
+        /* Сітка для кнопок чисел (0-15) */
         .numbers-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
         .num-btn { padding: 10px; border: 2px solid #cbd5e0; background: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s; }
         .num-btn.selected { background: #3182ce; color: white; border-color: #3182ce; }
@@ -57,15 +57,31 @@
         /* Екрани гри */
         .hidden { display: none !important; }
         .question-text { font-size: 56px; font-weight: bold; color: #2d3748; margin: 20px 0; }
-        .input-box { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        
+        /* Стандартний блок вводу */
+        .input-box { display: flex; gap: 10px; justify-content: center; margin-bottom: 15px; }
         input { font-size: 24px; width: 140px; padding: 10px; border: 2px solid #cbd5e0; border-radius: 8px; text-align: center; outline: none; }
         input:focus { border-color: #3182ce; }
         .action-btn { font-size: 18px; padding: 10px 20px; background: #4a5568; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
         
-        /* Варіанти відповідей для ділення на 0 */
-        .zero-options-box { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        .zero-opt-btn { width: 100%; padding: 12px; font-size: 18px; font-weight: bold; border: 2px solid #cbd5e0; background: #fff; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-        .zero-opt-btn:hover { background: #edf2f7; border-color: #a0aec0; }
+        /* Червона кнопка-екстрена для нуля */
+        .zero-danger-btn { 
+            width: 100%; 
+            padding: 12px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            background: #fff; 
+            color: #e53e3e; 
+            border: 2px solid #e53e3e; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            margin-bottom: 15px;
+        }
+        .zero-danger-btn:hover { 
+            background: #fff5f5; 
+            box-shadow: 0 4px 8px rgba(229, 62, 62, 0.15);
+        }
 
         .feedback { font-size: 20px; font-weight: bold; min-height: 28px; margin-top: 10px; }
         .stats { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0; color: #718096; font-size: 14px; }
@@ -136,18 +152,16 @@
             <div id="round-indicator" style="color:#718096; font-weight: bold; font-size: 14px;">Залишилось прикладів: <span id="examples-left">0</span></div>
             <div class="question-text" id="question">? × ?</div>
             
-            <!-- Звичайне поле вводу цифр -->
+            <!-- Поле вводу цифр (Тепер видиме ЗАВЖДИ) -->
             <div class="input-box" id="standard-input-box">
                 <input type="number" id="user-answer" placeholder="?" pattern="[0-9]*" inputmode="numeric">
                 <button class="action-btn" onclick="checkAnswer()">Перевірити</button>
             </div>
 
-            <!-- Спеціальний вибір варіантів для ділення на 0 -->
-            <div class="zero-options-box hidden" id="zero-input-box">
-                <button class="zero-opt-btn" onclick="checkZeroAnswer('0')">0</button>
-                <button class="zero-opt-btn" id="zero-opt-num" onclick="checkZeroAnswer('num')">Число</button>
-                <button class="zero-opt-btn" onclick="checkZeroAnswer('error')" style="color:#e53e3e;">На 0 ділити не можна! 🛑</button>
-            </div>
+            <!-- Червона кнопка-правило для прикладів з нулем -->
+            <button class="zero-danger-btn hidden" id="zero-danger-rule" onclick="clickZeroRuleBtn()">
+                На 0 ділити не можна! 🛑
+            </button>
 
             <div class="feedback" id="feedback"></div>
 
@@ -199,9 +213,9 @@
 
     const footerAuthor = document.getElementById('footer-author');
 
-    // Генерація кнопок чисел від 0 до 12
+    // Генерація кнопок чисел від 0 до 15
     const grid = document.getElementById('numbers-container');
-    for (let i = 0; i <= 12; i++) {
+    for (let i = 0; i <= 15; i++) {
         const btn = document.createElement('button');
         btn.className = 'num-btn';
         btn.innerText = `на ${i}`;
@@ -224,13 +238,13 @@
         const buttons = document.querySelectorAll('.num-btn');
         const btnAll = document.getElementById('toggle-all-btn');
         
-        if (selectedNumbers.length === 13) {
+        if (selectedNumbers.length === 16) {
             selectedNumbers = [];
             buttons.forEach(b => b.classList.remove('selected'));
             btnAll.innerText = "Обрати усі";
             btnAll.classList.remove('active');
         } else {
-            selectedNumbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+            selectedNumbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
             buttons.forEach(b => b.classList.add('selected'));
             btnAll.innerText = "Зняти виділення";
             btnAll.classList.add('active');
@@ -239,7 +253,7 @@
 
     function updateSelectAllButtonState() {
         const btnAll = document.getElementById('toggle-all-btn');
-        if (selectedNumbers.length === 13) {
+        if (selectedNumbers.length === 16) {
             btnAll.innerText = "Зняти виділення";
             btnAll.classList.add('active');
         } else {
@@ -279,23 +293,21 @@
             // ДІЛЕННЯ
             if (selectedOp === 'div' || selectedOp === 'both') {
                 if (baseNum === 0) {
-                    // Якщо дитина обрала «на 0» та ділення
                     for (let factor = 1; factor <= 5; factor++) {
                         mainQueue.push({
                             type: 'div_by_zero',
                             text: `${factor} ÷ 0`,
-                            ans: 'error' // Означає, що ділити не можна
+                            ans: 'error'
                         });
                     }
                 } else if (baseNum === 1) {
-                    // Для одиниці додаємо мікс: 5:1=5 ТА 5:5=1
                     for (let factor = 1; factor <= 10; factor++) {
                         mainQueue.push({
                             type: 'div',
                             text: `${factor} ÷ 1`,
                             ans: factor
                         });
-                        if (factor !== 1) { // Щоб не дублювати 1÷1
+                        if (factor !== 1) {
                             mainQueue.push({
                                 type: 'div',
                                 text: `${factor} ÷ ${factor}`,
@@ -304,7 +316,6 @@
                         }
                     }
                 } else {
-                    // Стандартне ділення на інші числа
                     for (let factor = 1; factor <= 10; factor++) {
                         mainQueue.push({
                             type: 'div',
@@ -372,43 +383,49 @@
         document.getElementById('question').innerText = currentQuestion.text;
         document.getElementById('feedback').innerText = "";
         
-        // КЕРУВАННЯ ПОЛЯМИ ВВОДУ (залежно від типу питання)
-        const stdInput = document.getElementById('standard-input-box');
-        const zeroInput = document.getElementById('zero-input-box');
+        const dangerBtn = document.getElementById('zero-danger-rule');
         const inputField = document.getElementById('user-answer');
         
-        if (currentQuestion.type === 'div_by_zero') {
-            stdInput.classList.add('hidden');
-            zeroInput.classList.remove('hidden');
-            // Налаштовуємо текст другої кнопки під поточне велике число приencryption приміром "5"
-            const firstNum = currentQuestion.text.split(' ')[0];
-            document.getElementById('zero-opt-num').innerText = firstNum;
+        // ПОКАЗУЄМО червону кнопку, якщо в списку обраних є 0 (про всяк випадок для пильності) або поточне питання містить 0
+        if (selectedNumbers.includes(0)) {
+            dangerBtn.classList.remove('hidden');
         } else {
-            zeroInput.classList.add('hidden');
-            stdInput.classList.remove('hidden');
-            inputField.value = '';
-            inputField.focus();
+            dangerBtn.classList.add('hidden');
         }
+
+        inputField.value = '';
+        inputField.focus();
     }
 
-    // Перевірка відповіді для звичайних прикладів
+    // Перевірка, коли дитина вводить число вручну
     function checkAnswer() {
         const input = document.getElementById('user-answer');
         const userAns = parseInt(input.value);
-        const feedback = document.getElementById('feedback');
-
         if (isNaN(userAns)) return;
 
-        processAnswerResult(userAns === currentQuestion.ans, currentQuestion.ans);
+        // Якщо це ділення на 0, а дитина намагається ввести будь-яке число цифрами — це помилка
+        if (currentQuestion.type === 'div_by_zero') {
+            processAnswerResult(false, "На 0 ділити не можна! (Треба тиснути червону кнопку)");
+        } else {
+            processAnswerResult(userAns === currentQuestion.ans, currentQuestion.ans);
+        }
     }
 
-    // Перевірка відповіді для прикладів ділення на 0
-    function checkZeroAnswer(selectedOption) {
-        const isCorrect = (selectedOption === 'error');
-        processAnswerResult(isCorrect, "На 0 ділити не можна!");
+    // Перевірка, коли дитина тисне червону кнопку
+    function clickZeroRuleBtn() {
+        const inputField = document.getElementById('user-answer');
+        // Очищуємо поле вводу, якщо дитина там щось писала перед цим
+        inputField.value = ''; 
+
+        if (currentQuestion.type === 'div_by_zero') {
+            // Якщо це дійсно ділення на 0 — відповідь правильна!
+            processAnswerResult(true, "На 0 ділити не можна!");
+        } else {
+            // Якщо приклад можна було обчислити (наприклад, 4 х 0 = 0), а вона натиснула кнопку правила — це помилка
+            processAnswerResult(false, currentQuestion.ans);
+        }
     }
 
-    // Загальна обробка логіки правильно/неправильно
     function processAnswerResult(isCorrect, correctText) {
         const feedback = document.getElementById('feedback');
         const input = document.getElementById('user-answer');
@@ -437,10 +454,8 @@
                     wrongQueue.push(currentQuestion);
                 }
             }
-            if (currentQuestion.type !== 'div_by_zero') {
-                input.value = '';
-                input.focus();
-            }
+            input.value = '';
+            input.focus();
         }
     }
 
