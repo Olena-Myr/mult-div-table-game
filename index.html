@@ -46,19 +46,20 @@
         
         .select-all-btn { width: 100%; padding: 10px; background: #edf2f7; border: 2px dashed #cbd5e0; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; }
         .select-all-btn.active { background: #e2e8f0; border-color: #a0aec0; }
-        
-        /* Кнопка 0 та 1 */
-        .special-zero-one-btn { width: 100%; padding: 12px; border: 2px solid #cbd5e0; background: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; margin-bottom: 20px; transition: 0.2s; color: #000; }
-        .special-zero-one-btn.selected { background: #3182ce; color: white; border-color: #3182ce; }
 
         /* Кнопки операцій */
-        .ops-group { display: flex; gap: 8px; margin-bottom: 25px; }
+        .ops-group { display: flex; gap: 8px; margin-bottom: 8px; }
         .op-btn { flex: 1; padding: 12px; border: 2px solid #cbd5e0; background: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .op-btn.selected { background: #3182ce; color: white; border-color: #3182ce; }
+
+        /* Кнопка особливого режиму 0 та 1 */
+        .special-zero-one-btn { width: 100%; padding: 12px; border: 2px solid #cbd5e0; background: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; margin-bottom: 15px; transition: 0.2s; color: #000; }
+        .special-zero-one-btn.selected { background: #3182ce; color: white; border-color: #3182ce; }
         
         .start-btn { width: 100%; padding: 15px; background: #48bb78; color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .start-btn:hover { background: #38a169; }
-        .start-btn:disabled { background: #a0aec0; cursor: not-allowed; }
+
+        .setup-warning { color: #e53e3e; font-weight: bold; margin-top: 10px; min-height: 20px; font-size: 14px; }
 
         /* Екрани гри */
         .hidden { display: none !important; }
@@ -69,15 +70,12 @@
         .input-row { display: flex; gap: 10px; justify-content: center; width: 100%; max-width: 300px; }
         input { font-size: 24px; width: 120px; padding: 10px; border: 2px solid #cbd5e0; border-radius: 8px; text-align: center; outline: none; }
         input:focus { border-color: #3182ce; }
-        input:disabled { background: #edf2f7; color: #718096; }
         
         .action-btn { font-size: 18px; padding: 10px 20px; background: #4a5568; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1; }
-        .action-btn:disabled { background: #a0aec0; cursor: not-allowed; }
         
         /* Кнопка "неможливо" */
         .impossible-btn { width: 100%; max-width: 300px; padding: 12px; background: #e53e3e; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .impossible-btn:hover { background: #c53030; }
-        .impossible-btn:disabled { background: #feb2b2; color: #fff; cursor: not-allowed; }
         
         .feedback { font-size: 20px; font-weight: bold; min-height: 28px; margin-top: 10px; line-height: 1.4; }
         .stats { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0; color: #718096; font-size: 14px; }
@@ -168,8 +166,6 @@
             <div class="section-title">1. Яку таблицю вивчаємо?</div>
             <div class="numbers-grid" id="numbers-container"></div>
             <button class="select-all-btn" id="toggle-all-btn" onclick="toggleAllNumbers()">Обрати усі</button>
-            
-            <button class="special-zero-one-btn" id="zero-one-btn" onclick="toggleZeroOneSpecial()">Множення та ділення з 0 та 1 🚀</button>
 
             <div class="section-title">2. Оберіть дію</div>
             <div class="ops-group">
@@ -178,7 +174,11 @@
                 <button class="op-btn" id="op-both" onclick="setOperation('both')">Множення і ділення</button>
             </div>
 
+            <div class="section-title">3. Тренуємо лише...</div>
+            <button class="special-zero-one-btn" id="zero-one-btn" onclick="toggleZeroOneSpecial()">Множення та ділення з 0 та 1 та ділення числа саме на себе 💡</button>
+
             <button class="start-btn" onclick="startGame()">Почати гру 🚀</button>
+            <div class="setup-warning" id="setup-warning"></div>
         </div>
 
         <!-- ЕКРАН ГРИ -->
@@ -233,7 +233,8 @@
     let selectedNumbers = [];
     let isZeroOneSpecialSelected = false; 
     let selectedOp = 'mult'; 
-    let activeGameHasSpecialMode = false; // Фіксує стан під час гри для відображення кнопки "неможливо"
+    let activeGameHasSpecialMode = false; 
+    let isProcessing = false; 
 
     let mainQueue = [];       
     let wrongQueue = [];      
@@ -246,8 +247,8 @@
 
     const footerAuthor = document.getElementById('footer-author');
     const inputField = document.getElementById('user-answer');
-    const submitBtn = document.getElementById('submit-btn');
     const impossibleBtn = document.getElementById('impossible-btn');
+    const setupWarning = document.getElementById('setup-warning');
 
     const grid = document.getElementById('numbers-container');
     for (let i = 1; i <= 12; i++) {
@@ -262,6 +263,10 @@
         document.getElementById('feedback').innerText = "";
     });
 
+    function clearSetupWarning() {
+        setupWarning.innerText = "";
+    }
+
     function toggleNumber(num, btn) {
         if (selectedNumbers.includes(num)) {
             selectedNumbers = selectedNumbers.filter(n => n !== num);
@@ -271,6 +276,7 @@
             btn.classList.add('selected');
         }
         updateSelectAllButtonState();
+        clearSetupWarning();
     }
 
     function toggleAllNumbers() {
@@ -288,6 +294,7 @@
             btnAll.innerText = "Зняти виділення";
             btnAll.classList.add('active');
         }
+        clearSetupWarning();
     }
 
     function updateSelectAllButtonState() {
@@ -309,6 +316,7 @@
         } else {
             btn.classList.remove('selected');
         }
+        clearSetupWarning();
     }
 
     function setOperation(op) {
@@ -327,7 +335,7 @@
         wrongQueue = [];
         isWorkingOnErrors = false;
 
-        // 1. Стандартні числа (1-12) з меню вибору дії
+        // Звичайні приклади за обраною таблицею та обраною дією
         selectedNumbers.forEach(baseNum => {
             for (let factor = 1; factor <= 10; factor++) {
                 if (selectedOp === 'mult' || selectedOp === 'both') {
@@ -343,40 +351,35 @@
                         ans: factor,
                         isImpossible: false
                     });
-
-                    if (baseNum === 1) {
-                        mainQueue.push({
-                            text: `${factor} ÷ ${factor}`,
-                            ans: 1,
-                            isImpossible: false
-                        });
-                    }
                 }
             }
         });
 
-        // 2. Спеціальний режим "0 та 1" (ділення і множення додаються завжди)
+        // Особливий режим: завжди і множення, і ділення одразу,
+        // незалежно від того, що обрано у пункті 2.
         if (isZeroOneSpecialSelected) {
             for (let i = 0; i <= 10; i++) {
-                // Додаємо множення
+                // 1) множення на 0
                 mainQueue.push({ text: `${i} × 0`, ans: 0, isImpossible: false });
+                mainQueue.push({ text: `0 × ${i}`, ans: 0, isImpossible: false });
+
+                // 3) множення на 1
                 mainQueue.push({ text: `${i} × 1`, ans: i, isImpossible: false });
-                if (i !== 0 && i !== 1) {
-                    mainQueue.push({ text: `0 × ${i}`, ans: 0, isImpossible: false });
-                    mainQueue.push({ text: `1 × ${i}`, ans: i, isImpossible: false });
-                }
-                
-                // Додаємо ділення
+                mainQueue.push({ text: `1 × ${i}`, ans: i, isImpossible: false });
+
+                // 4) ділення на 1
+                mainQueue.push({ text: `${i} ÷ 1`, ans: i, isImpossible: false });
+
                 if (i > 0) {
-                    mainQueue.push({ text: `${i} ÷ 1`, ans: i, isImpossible: false });
+                    // 2) ділення на 0 (правильна відповідь — кнопка "неможливо")
+                    mainQueue.push({ text: `${i} ÷ 0`, ans: -999, isImpossible: true });
+
+                    // 5) ділення числа на саме себе
                     mainQueue.push({ text: `${i} ÷ ${i}`, ans: 1, isImpossible: false });
-                    mainQueue.push({ text: `0 ÷ ${i}`, ans: 0, isImpossible: false });
-                    mainQueue.push({ text: `${i} ÷ 0`, ans: -999, isImpossible: true }); 
                 }
             }
         }
 
-        // Очищення дублікатів
         const uniqueTexts = new Set();
         mainQueue = mainQueue.filter(item => {
             if (uniqueTexts.has(item.text)) return false;
@@ -389,11 +392,13 @@
 
     function startGame() {
         if (selectedNumbers.length === 0 && !isZeroOneSpecialSelected) {
-            alert("Будь ласка, оберіть числа або режим з 0 та 1 для вивчення!");
+            setupWarning.innerText = "⚠️ Будь ласка, оберіть числа або особливий режим для вивчення!";
             return;
         }
+        clearSetupWarning();
         
-        activeGameHasSpecialMode = isZeroOneSpecialSelected; // Фіксуємо налаштування для поточної сесії
+        activeGameHasSpecialMode = isZeroOneSpecialSelected; 
+        isProcessing = false; 
         generateGameQueues();
 
         document.getElementById('setup-screen').classList.add('hidden');
@@ -412,6 +417,7 @@
     }
 
     function showSetup() {
+        isProcessing = false; 
         document.getElementById('game-screen').classList.add('hidden');
         document.getElementById('win-screen').classList.add('hidden');
         document.getElementById('setup-screen').classList.remove('hidden');
@@ -421,10 +427,8 @@
 
     function nextQuestion() {
         hasErrorOnCurrentQuestion = false;
+        isProcessing = false; 
         
-        inputField.disabled = false;
-        submitBtn.disabled = false;
-        impossibleBtn.disabled = false;
         document.getElementById('feedback').innerText = "";
         
         if (mainQueue.length > 0) {
@@ -443,7 +447,6 @@
             return;
         }
 
-        // Кнопка «неможливо» на видноті ВСЮ гру, якщо запущено режим «0 та 1»
         if (activeGameHasSpecialMode) {
             impossibleBtn.classList.remove('hidden');
         } else {
@@ -457,10 +460,12 @@
     }
 
     function checkAnswer(clickedImpossible) {
+        if (isProcessing) return; 
+
         const userAns = parseInt(inputField.value);
         const feedback = document.getElementById('feedback');
 
-        if (inputField.disabled) return;
+        // Якщо натиснуто "Перевірити", а інпут порожній — нічого не робимо
         if (!clickedImpossible && isNaN(userAns)) return; 
 
         let isCorrect = false;
@@ -472,6 +477,7 @@
         }
 
         if (isCorrect) {
+            isProcessing = true; 
             if (currentQuestion.isImpossible) {
                 feedback.innerHTML = "🎉 Правильно!<br><span style='font-size: 16px;'>На 0 ділити не можна! 🛑</span>";
             } else {
@@ -479,10 +485,6 @@
             }
             feedback.style.color = "#48bb78";
             
-            inputField.disabled = true;
-            submitBtn.disabled = true;
-            impossibleBtn.disabled = true;
-
             if (!hasErrorOnCurrentQuestion && !isWorkingOnErrors) {
                 correctFirstTimeCount++;
                 document.getElementById('stat-correct').innerText = correctFirstTimeCount;
@@ -517,9 +519,27 @@
         }
     }
 
-    inputField.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') checkAnswer(false);
+    // Слухач звичайного клавіатурного Enter без використання HTML-форм
+    inputField.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            checkAnswer(false);
+        }
     });
+
+    function endGame() {
+        isProcessing = false; 
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('win-screen').classList.remove('hidden');
+        
+        footerAuthor.classList.remove('hidden');
+        
+        const summary = document.getElementById('win-summary');
+        if (totalWrongCount === 0) {
+            summary.innerHTML = `🌟 <b>Ідеальний результат!</b> Ви розв'язали всі приклади з першого разу без жодної помилки! Ти справжній математичний геній!`;
+        } else {
+            summary.innerHTML = `🏆 <b>Чудова робота!</b> Ви розв'язали всі приклади та успішно виправили всі свої помилки (помилок було: ${totalWrongCount}). Тепер ви точно знаєте цю таблицю на відмінно!`;
+        }
+    }
 </script>
 
 </body>
