@@ -39,14 +39,12 @@
         h2 { color: #2c3e50; margin-top: 0; }
         .section-title { font-weight: bold; margin: 15px 0 8px 0; color: #5a6c7d; text-align: left; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* Сітка для кнопок чисел (0-15) */
         .numbers-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
         .num-btn { padding: 10px; border: 2px solid #cbd5e0; background: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s; }
         .num-btn.selected { background: #3182ce; color: white; border-color: #3182ce; }
         .select-all-btn { width: 100%; padding: 10px; background: #edf2f7; border: 2px dashed #cbd5e0; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
         .select-all-btn.active { background: #e2e8f0; border-color: #a0aec0; }
 
-        /* Кнопки операцій */
         .ops-group { display: flex; gap: 8px; margin-bottom: 25px; }
         .op-btn { flex: 1; padding: 12px; border: 2px solid #cbd5e0; background: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .op-btn.selected { background: #3182ce; color: white; border-color: #3182ce; }
@@ -54,7 +52,6 @@
         .start-btn { width: 100%; padding: 15px; background: #48bb78; color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .start-btn:hover { background: #38a169; }
 
-        /* Екрани гри */
         .hidden { display: none !important; }
         .question-text { font-size: 56px; font-weight: bold; color: #2d3748; margin: 20px 0; }
         
@@ -63,7 +60,6 @@
         input:focus { border-color: #3182ce; }
         .action-btn { font-size: 18px; padding: 10px 20px; background: #4a5568; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
         
-        /* Червона кнопка-правило для прикладів з нулем */
         .zero-danger-btn { 
             width: 100%; 
             padding: 12px; 
@@ -86,11 +82,9 @@
         .stats { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0; color: #718096; font-size: 14px; }
         .back-btn { margin-top: 15px; background: none; border: none; color: #3182ce; cursor: pointer; text-decoration: underline; font-size: 14px; }
 
-        /* Екран фіналу */
         .win-title { color: #38a169; font-size: 32px; margin-bottom: 10px; }
         .win-text { font-size: 18px; color: #4a5568; margin-bottom: 25px; line-height: 1.5; }
 
-        /* БЛОК АВТОРСТВА */
         .author-box {
             background: rgba(255, 255, 255, 0.9);
             padding: 15px 20px;
@@ -126,7 +120,6 @@
 <body>
 
 <div class="main-wrapper">
-    <!-- КОНТЕЙНЕР ГРИ -->
     <div class="container">
         <!-- ЕКРАН НАЛАШТУВАНЬ -->
         <div id="setup-screen">
@@ -153,7 +146,7 @@
             
             <div class="input-box" id="standard-input-box">
                 <input type="number" id="user-answer" placeholder="?" pattern="[0-9]*" inputmode="numeric">
-                <button class="action-btn" onclick="checkAnswer()">Перевірити</button>
+                <button class="action-btn" id="check-btn" onclick="checkAnswer()">Перевірити</button>
             </div>
 
             <button class="zero-danger-btn hidden" id="zero-danger-rule" onclick="clickZeroRuleBtn()">
@@ -185,7 +178,7 @@
                 <svg viewBox="0 0 24 24"><path d="M9 8H7v3h2v9h3v-9h2.725l.425-3H12V6.275c0-.825.225-1.15 1.15-1.15H15V2h-2.625C10.075 2 9 3.125 9 5.35V8z"/></svg>
             </a>
             <a href="https://www.instagram.com/optematiki" target="_blank" class="social-icon icon-ig" title="Instagram">
-                <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0 3.259-.014 3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
             </a>
             <a href="https://www.youtube.com/@optematiki" target="_blank" class="social-icon icon-yt" title="YouTube">
                 <svg viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.87.508 9.388.508 9.388.508s7.518 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
@@ -207,6 +200,7 @@
     let correctFirstTimeCount = 0;
     let totalWrongCount = 0;
     let hasErrorOnCurrentQuestion = false; 
+    let isProcessing = false; // Прапорець захисту від подвійних кліків
 
     const footerAuthor = document.getElementById('footer-author');
 
@@ -340,6 +334,7 @@
         
         correctFirstTimeCount = 0;
         totalWrongCount = 0;
+        isProcessing = false;
         document.getElementById('stat-correct').innerText = correctFirstTimeCount;
         document.getElementById('stat-wrong').innerText = totalWrongCount;
         document.getElementById('feedback').innerText = "";
@@ -357,6 +352,7 @@
 
     function nextQuestion() {
         hasErrorOnCurrentQuestion = false;
+        isProcessing = false; // Знімаємо блокування для нового питання
         
         if (mainQueue.length > 0) {
             isWorkingOnErrors = false;
@@ -387,10 +383,13 @@
         }
 
         inputField.value = '';
+        inputField.disabled = false;
         inputField.focus();
     }
 
     function checkAnswer() {
+        if (isProcessing) return; // Захист від подвійного кліку
+
         const input = document.getElementById('user-answer');
         const userAns = parseInt(input.value);
         if (isNaN(userAns)) return;
@@ -403,6 +402,8 @@
     }
 
     function clickZeroRuleBtn() {
+        if (isProcessing) return;
+
         const inputField = document.getElementById('user-answer');
         inputField.value = ''; 
 
@@ -418,6 +419,8 @@
         const input = document.getElementById('user-answer');
 
         if (isCorrect) {
+            isProcessing = true; // Блокуємо систему до показу наступного питання
+            input.disabled = true;
             feedback.innerText = "🎉 Правильно!";
             feedback.style.color = "#48bb78";
             
