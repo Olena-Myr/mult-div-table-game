@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тренажер: Таблиця множення та ділення</title>
+    <title>Розумний тренажер: Таблиця множення та ділення</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
         body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; padding: 20px; }
@@ -27,7 +27,7 @@
         .start-btn { width: 100%; padding: 15px; background: #48bb78; color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .start-btn:hover { background: #38a169; }
 
-        /* Екран самої гри */
+        /* Екрани */
         .hidden { display: none; }
         .question-text { font-size: 56px; font-weight: bold; color: #2d3748; margin: 20px 0; }
         .input-box { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
@@ -36,8 +36,12 @@
         .action-btn { font-size: 18px; padding: 10px 20px; background: #4a5568; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
         
         .feedback { font-size: 20px; font-weight: bold; min-height: 28px; margin-top: 10px; }
-        .stats { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0; color: #718096; }
+        .stats { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0; color: #718096; font-size: 14px; }
         .back-btn { margin-top: 15px; background: none; border: none; color: #3182ce; cursor: pointer; text-decoration: underline; font-size: 14px; }
+
+        /* Екран фіналу */
+        .win-title { color: #38a169; font-size: 32px; margin-bottom: 10px; }
+        .win-text { font-size: 18px; color: #4a5568; margin-bottom: 25px; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -48,9 +52,7 @@
         <h2>Налаштування гри</h2>
         
         <div class="section-title">1. Яку таблицю вивчаємо?</div>
-        <div class="numbers-grid" id="numbers-container">
-            <!-- Кнопки від 1 до 12 згенеруються через JavaScript -->
-        </div>
+        <div class="numbers-grid" id="numbers-container"></div>
         <button class="select-all-btn" id="toggle-all-btn" onclick="toggleAllNumbers()">Обрати усі</button>
 
         <div class="section-title">2. Оберіть дію</div>
@@ -65,7 +67,7 @@
 
     <!-- ЕКРАН ГРИ -->
     <div id="game-screen" class="hidden">
-        <h3 style="color:#718096; margin:0;">Поточне питання:</h3>
+        <div id="round-indicator" style="color:#718096; font-weight: bold; font-size: 14px;">Залишилось прикладів: <span id="examples-left">0</span></div>
         <div class="question-text" id="question">? × ?</div>
         
         <div class="input-box">
@@ -76,21 +78,35 @@
         <div class="feedback" id="feedback"></div>
 
         <div class="stats">
-            <div>Правильно: <span id="stat-correct" style="color:#48bb78; font-weight:bold;">0</span></div>
-            <div>Помилок: <span id="stat-wrong" style="color:#e53e3e; font-weight:bold;">0</span></div>
+            <div>Правильно одразу: <span id="stat-correct" style="color:#48bb78; font-weight:bold;">0</span></div>
+            <div>Помилок за гру: <span id="stat-wrong" style="color:#e53e3e; font-weight:bold;">0</span></div>
         </div>
-        <button class="back-btn" onclick="showSetup()">Змінити налаштування</button>
+        <button class="back-btn" onclick="showSetup()">Вийти в меню</button>
+    </div>
+
+    <!-- ЕКРАН ПЕРЕМОГИ -->
+    <div id="win-screen" class="hidden">
+        <div class="win-title">🎉 Ура! Перемога! 🎉</div>
+        <p class="win-text" id="win-summary">Ви успішно розв'язали всі приклади та вивчили обрану таблицю без жодної помилки!</p>
+        <button class="start-btn" onclick="showSetup()">Грати знову 🔄</button>
     </div>
 </div>
 
 <script>
     let selectedNumbers = [];
-    let selectedOp = 'mult'; // 'mult', 'div', 'both'
-    let num1, num2, isMultiplication, correctAnswer;
-    let correctCount = 0;
-    let wrongCount = 0;
+    let selectedOp = 'mult'; 
+    
+    // Нова логіка черги прикладів
+    let mainQueue = [];       // Основний список прикладів без повторів
+    let wrongQueue = [];      // Список прикладів, де дитина зробила помилку
+    let currentQuestion = null;
+    let isWorkingOnErrors = false; // Чи проходимо ми роботу над помилками
 
-    // Геренація кнопок чисел від 1 до 12
+    let correctFirstTimeCount = 0;
+    let totalWrongCount = 0;
+    let hasErrorOnCurrentQuestion = false; // Прапорець, щоб знати, чи помилявся у цьому поточному питанні
+
+    // Генерація кнопок чисел від 1 до 12
     const grid = document.getElementById('numbers-container');
     for (let i = 1; i <= 12; i++) {
         const btn = document.createElement('button');
@@ -150,52 +166,90 @@
         if (op === 'both') document.getElementById('op-both').classList.add('selected');
     }
 
+    // Створення перемішаного масиву прикладів
+    function generateGameQueues() {
+        mainQueue = [];
+        wrongQueue = [];
+        isWorkingOnErrors = false;
+
+        selectedNumbers.forEach(baseNum => {
+            // Для кожного числа генеруємо рівно 10 прикладів (від 1 до 10)
+            for (let factor = 1; factor <= 10; factor++) {
+                if (selectedOp === 'mult' || selectedOp === 'both') {
+                    mainQueue.push({
+                        type: 'mult',
+                        base: baseNum,
+                        factor: factor,
+                        text: `${baseNum} × ${factor}`,
+                        ans: baseNum * factor
+                    });
+                }
+                if (selectedOp === 'div' || selectedOp === 'both') {
+                    mainQueue.push({
+                        type: 'div',
+                        base: baseNum, // дільник
+                        factor: factor, // відповідь
+                        text: `${baseNum * factor} ÷ ${baseNum}`,
+                        ans: factor
+                    });
+                }
+            }
+        });
+
+        // Перемішуємо основну колоду прикладів випадковим чином
+        mainQueue.sort(() => Math.random() - 0.5);
+    }
+
     function startGame() {
         if (selectedNumbers.length === 0) {
             alert("Будь ласка, оберіть хоча б одне число для вивчення таблиці!");
             return;
         }
+        
+        generateGameQueues();
+
         document.getElementById('setup-screen').classList.add('hidden');
+        document.getElementById('win-screen').classList.add('hidden');
         document.getElementById('game-screen').classList.remove('hidden');
-        correctCount = 0;
-        wrongCount = 0;
-        document.getElementById('stat-correct').innerText = correctCount;
-        document.getElementById('stat-wrong').innerText = wrongCount;
+        
+        correctFirstTimeCount = 0;
+        totalWrongCount = 0;
+        document.getElementById('stat-correct').innerText = correctFirstTimeCount;
+        document.getElementById('stat-wrong').innerText = totalWrongCount;
         document.getElementById('feedback').innerText = "";
+        
         nextQuestion();
     }
 
     function showSetup() {
         document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('win-screen').classList.add('hidden');
         document.getElementById('setup-screen').classList.remove('hidden');
     }
 
     function nextQuestion() {
-        // Випадково беремо одне з обраних користувачем чисел таблиці
-        const baseNum = selectedNumbers[Math.floor(Math.random() * selectedNumbers.length)];
-        // Друге число (множник або результат ділення) від 1 до 10
-        const randomFactor = Math.floor(Math.random() * 10) + 1;
-
-        if (selectedOp === 'mult') isMultiplication = true;
-        else if (selectedOp === 'div') isMultiplication = false;
-        else isMultiplication = Math.random() > 0.5;
-
-        if (isMultiplication) {
-            num1 = baseNum;
-            num2 = randomFactor;
-            correctAnswer = num1 * num2;
-            document.getElementById('question').innerText = `${num1} × ${num2}`;
-        } else {
-            // ОНОВЛЕНА ЛОГІКА ДІЛЕННЯ:
-            // Тепер baseNum — це дільник (число НА яке ділимо). 
-            // randomFactor — це те, що вийде в результаті ділення.
-            // Ділене (num1) утворюється перемноженням, щоб приклад ділився без залишку.
-            num2 = baseNum;            // дільник (НА обране число)
-            correctAnswer = randomFactor; // відповідь, яку має відгадати дитина
-            num1 = num2 * correctAnswer;  // ділене (велике число в прикладі)
-            document.getElementById('question').innerText = `${num1} ÷ ${num2}`;
-        }
+        hasErrorOnCurrentQuestion = false;
         
+        // Перевіряємо, з якої черги брати приклад
+        if (mainQueue.length > 0) {
+            isWorkingOnErrors = false;
+            currentQuestion = mainQueue.shift();
+            document.getElementById('round-indicator').innerHTML = `Основний етап. Залишилось: <span id="examples-left">${mainQueue.length + 1}</span>`;
+        } else if (wrongQueue.length > 0) {
+            // Якщо основні закінчились, перемішуємо помилки і даємо їх по колу
+            if (!isWorkingOnErrors) {
+                isWorkingOnErrors = true;
+                wrongQueue.sort(() => Math.random() - 0.5);
+            }
+            currentQuestion = wrongQueue.shift();
+            document.getElementById('round-indicator').innerHTML = `🛑 Робота над помилками! Залишилось виправити: <span id="examples-left" style="color:#e53e3e">${wrongQueue.length + 1}</span>`;
+        } else {
+            // Обидві черги порожні — дитина все рішила без помилок!
+            endGame();
+            return;
+        }
+
+        document.getElementById('question').innerText = currentQuestion.text;
         const input = document.getElementById('user-answer');
         input.value = '';
         input.focus();
@@ -208,19 +262,46 @@
 
         if (isNaN(userAns)) return;
 
-        if (userAns === correctAnswer) {
-            feedback.innerText = "🎉 Правильно! Молодець!";
+        if (userAns === currentQuestion.ans) {
+            feedback.innerText = "🎉 Правильно!";
             feedback.style.color = "#48bb78";
-            correctCount++;
-            document.getElementById('stat-correct').innerText = correctCount;
+            
+            if (!hasErrorOnCurrentQuestion && !isWorkingOnErrors) {
+                correctFirstTimeCount++;
+                document.getElementById('stat-correct').innerText = correctFirstTimeCount;
+            }
+            
+            // Переходимо до наступного прикладу через секунду
             setTimeout(nextQuestion, 1000);
         } else {
-            feedback.innerText = `❌ Ой... Правильна відповідь: ${correctAnswer}`;
+            feedback.innerText = `❌ Неправильно. Буде: ${currentQuestion.ans}`;
             feedback.style.color = "#e53e3e";
-            wrongCount++;
-            document.getElementById('stat-wrong').innerText = wrongCount;
+            
+            if (!hasErrorOnCurrentQuestion) {
+                totalWrongCount++;
+                document.getElementById('stat-wrong').innerText = totalWrongCount;
+                hasErrorOnCurrentQuestion = true;
+                
+                // Додаємо приклад у чергу помилок (якщо його там ще немає)
+                const alreadyInWrong = wrongQueue.some(q => q.text === currentQuestion.text);
+                if (!alreadyInWrong) {
+                    wrongQueue.push(currentQuestion);
+                }
+            }
             input.value = '';
             input.focus();
+        }
+    }
+
+    function endGame() {
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('win-screen').classList.remove('hidden');
+        
+        const summary = document.getElementById('win-summary');
+        if (totalWrongCount === 0) {
+            summary.innerHTML = `🌟 <b>Ідеальний результат!</b> Ви розв'язали всі приклади з першого разу без жодної помилки! Ти справжній математичний геній!`;
+        } else {
+            summary.innerHTML = `🏆 <b>Чудова робота!</b> Ви розв'язали всі приклади та успішно виправили всі свої помилки (помилок було: ${totalWrongCount}). Тепер ви точно знаєте цю таблицю на відмінно!`;
         }
     }
 
